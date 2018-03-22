@@ -1,18 +1,8 @@
-<style>
-<link href="<?php echo $this->webroot;?>layout/nguyenvanduoc/admin2/js/excel_table/css/fixed_table_rc.css" type="text/css" rel="stylesheet" media="all" />
-
-<script src="<?php echo $this->webroot;?>layout/nguyenvanduoc/admin2/js/excel_table/js/sortable_table.js" type="text/javascript"></script>
-<script src="<?php echo $this->webroot;?>layout/nguyenvanduoc/admin2/js/excel_table/js/fixed_table_rc.js" type="text/javascript"></script>
-</style>
 <style type="text/css">
 .tbl_r{
 
 
 }
-.table-responsive{
-  width: 1800px;
-}
-
 .parent{
   height: 50%;
   position: absolute;
@@ -22,34 +12,16 @@
 }
 div.container_table {
 	padding: 5px 15px;
-	width: 1860px;
+	width: 100%;
 	margin:0px;
-	
+	z-index:101;
 	position: absolute;
 	height: 600px;
 	left: 0;
 	
 }
 
-.fixed_table
-{
-	position: absolute;
-	width: 1860px;
-	left: 0;
-	height: 400px;
-}
-.fixed_table table tr th {
-	background-color: #DBEAF9;
 
-}
-.fix_cell
-{
-	background-color:#2f83b7;	
-	color: white;
-}
-.ui-datepicker {
-	z-index: 10000 !important;
-}
 .form-group{
 	margin-top: 0px;
 }
@@ -64,6 +36,15 @@ footer{
 }
 .chu-nhat{
 	background-color: #f1c906;
+}
+
+.table-responsive{
+	width:1860px;	
+}
+.scroll-tab-baocao{
+	overflow-x:auto ;
+	overflow-y:scroll;
+	height:500px;
 }
 </style>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -717,7 +698,7 @@ if($array_machine)
 	}//END: if($array_machine)
 	
 	
-	$str_table_production_machine =  $this->Template->load_table($str_header_production . $str_row_production_machine);
+	$str_table_production_machine =  $this->Template->load_table($str_header_production . $str_row_production_machine,array("id"=>"baocao"));
 	
 /****************************************************************************************************************************/
 /* 									BEGIN: BÁO CÁO NĂNG SUẤT SẢN - MÁY														*/
@@ -731,17 +712,17 @@ if($array_machine)
     <li><a href="#tabs-2">Báo Cáo Năng Suất Sản Xuất</a></li>
     <li><a href="#tabs-3">Báo Cáo Năng Suất Máy</a></li>
   </ul>
-  <div id="tabs-1">
+  <div id="tabs-1" class="scroll-tab-baocao">
   	<?php
 		echo $str_table_production;
 	?>
   </div>
-    <div id="tabs-2">
+    <div id="tabs-2" class="scroll-tab-baocao">
   	<?php
 		echo $str_table_production_sx;
 	?>
   </div>
-  <div id="tabs-3">
+  <div id="tabs-3" class="scroll-tab-baocao">
   	<?php
 		echo $str_table_production_machine;
 	?>
@@ -760,7 +741,6 @@ if($array_machine)
 	show_khsx();
  });
  
- 	
  	//Lấy liệu sĩ số, hiện diện, vắng của các tổ
  	function show_dulieu()
 	{
