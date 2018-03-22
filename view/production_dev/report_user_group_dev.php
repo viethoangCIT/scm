@@ -540,7 +540,7 @@ if($array_machine)
 			$id_machine = $machine["id"];
 			
 			$array_row_production_machine["col1"] = array($control,array());
-			$array_row_production_machine["col2"] = array("Thời gian làm việc");
+			$array_row_production_machine["col2"] = array("Tên hàng");
 			
 			for($i=1; $i<=$songay; $i++)
 			{
@@ -572,7 +572,7 @@ if($array_machine)
 			$id_machine = $machine["id"];
 			
 			$array_row_production_machine["col1"] = array("");
-			$array_row_production_machine["col2"] = array("KHSX");
+			$array_row_production_machine["col2"] = array("Mã hàng");
 			
 			for($i=1; $i<=$songay; $i++)
 			{
@@ -606,7 +606,7 @@ if($array_machine)
 			$id_machine = $machine["id"];
 			
 			$array_row_production_machine["col1"] = array("");
-			$array_row_production_machine["col2"] = array("Thực tế làm được");
+			$array_row_production_machine["col2"] = array("KHSX");
 			
 			for($i=1; $i<=$songay; $i++)
 			{
@@ -640,7 +640,7 @@ if($array_machine)
 			$id_machine = $machine["id"];
 			
 			$array_row_production_machine["col1"] = array("");
-			$array_row_production_machine["col2"] = array("Năng suất");
+			$array_row_production_machine["col2"] = array("TTSX");
 			
 			for($i=1; $i<=$songay; $i++)
 			{
@@ -668,7 +668,7 @@ if($array_machine)
 			
 			//BEGIN: DÒNG NĂNG SUẤT - MÁY
 			$array_row_production_machine["col1"] = array("");
-			$array_row_production_machine["col2"] = array("Số lượng NG");
+			$array_row_production_machine["col2"] = array("Năng suất");
 			
 			for($i=1; $i<=$songay; $i++)
 			{
@@ -739,6 +739,7 @@ if($array_machine)
 	show_nhansu();
 	show_thoigian_lamviec();
 	show_khsx();
+	show_nangsuat_may();
  });
  
  	//Lấy liệu sĩ số, hiện diện, vắng của các tổ
@@ -944,12 +945,44 @@ if($array_machine)
 		month 			= "<?php echo $month; ?>";
 		$.ajax({ method: "GET", url: "/production/user_production?debug=sql", data: {request: "nangsuat_may", month: month}})
 		.done(function( str_data ) {
-			alert(str_data);
+			//alert(str_data);
 			var array_data = $.parseJSON(str_data);
 			
 			for (var key in array_data) 
 			{
+				var id_tenhang = "tenhang_"+array_data[key]["id_day"];
+				var id_mahang = "mahang_"+array_data[key]["id_day"];
+				var id_khsx_may = "khsx_may_"+array_data[key]["id_day"];
+				var id_thucte_sx_may = "thucte_sx_may_"+array_data[key]["id_day"];
+				var nangsuat_may = "nangsuat_may_"+array_data[key]["id_day"];
+				if(document.getElementById(id_tenhang))
+				{
+					document.getElementById(id_tenhang).innerHTML = array_data[key]["product"];
+				}
+				if(document.getElementById(id_mahang))
+				{
+					document.getElementById(id_mahang).innerHTML = array_data[key]["product_code"];
+				}	
+				if(document.getElementById(id_khsx_may))
+				{
+					document.getElementById(id_khsx_may).innerHTML = Math.round(parseFloat(array_data[key]["soluong_sx"]));
+				}
+				if(document.getElementById(id_thucte_sx_may))
+				{
+					document.getElementById(id_thucte_sx_may).innerHTML = array_data[key]["num_ok"];
+				}
 				
+				var thucte_may = parseInt(array_data[key]["num_ok"]);
+				var khsx_may = parseInt(array_data[key]["soluong_sx"]);
+				if(thucte_may >0)
+				{
+					//document.getElementById(nangsuat_may).innerHTML = "%";
+					var str_nangsuat_may = thucte_may/khsx_may * 100;
+					if(document.getElementById(nangsuat_may)) 
+					{	
+						document.getElementById(nangsuat_may).innerHTML = ""+str_nangsuat_may.toFixed(1) + "%";
+					}
+				}
 			}
 		});
 	}

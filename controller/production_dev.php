@@ -313,7 +313,7 @@
 			
 			$sql_product_detail = "SELECT A.*, B.* FROM ($sql_product) AS A LEFT JOIN ($sql_detail) AS B ON A.id = B.id_product WHERE B.id_product IS NOT NULL";
 			
-			$str_col_machine = "id_product AS id_product_machine,id_machine, machine_name, cavity, cycletime";
+			$str_col_machine = "id_product AS id_product_machine,id_machine, machine_name, machine_control, cavity, cycletime";
 			$sql_machine = "SELECT $str_col_machine FROM scm_product_machines";
 			
 			$sql_production_plan_detail = "SELECT C.*, D.* FROM ($sql_product_detail) AS C LEFT JOIN ($sql_machine) AS D ON C.id = D.id_product_machine";
@@ -326,7 +326,7 @@
 			$sql_product_user = "SELECT id_product AS id_product_user, user_code, user_fullname, work_name, shift FROM `scm_product_users`";
 			$sql_production_plan_data_user = "SELECT G.*, H.* FROM ($sql_production_plan_data) AS G LEFT JOIN ($sql_product_user) AS H ON G.id = H.id_product_user";
 			
-			echo $sql_production_plan_data_user;
+			//echo $sql_production_plan_data_user;
 			$array_production_detail = $this->Product->query($sql_production_plan_data);
 			
 			$stt = 0;
@@ -1395,12 +1395,22 @@
 				$array_machine = $this->Machine->find("all",array("fields"=>"id, control"));
 				if(isset($_GET["request"]) && $_GET["request"] =="nangsuat_may" )
 				{	
+					$sql_machine = "SELECT id, control, name FROM scm_machines";
+					$sql_product_machine = "SELECT id_product, id_machine, machine_control, cavity, cycletime FROM scm_product_machines";
+					$sql_product_join_machine = "SELECT A.*, B.* FROM ($sql_machine) AS A LEFT JOIN ($sql_product_machine) AS B ON A.id = B.id_machine";
 					
-					//$array_khsx = $this->DB->query($sql_tong_khsx_thucte);
-					$str_json = json_encode($array_khsx);
-					//if($array_khsx)
+					$sql_production_plan_detail = "SELECT id_machine AS id_machine_detail, id_product AS id_product_detail, product, product_code, time, day, id AS id_production_detail FROM scm_production_plan_detail";
+					$sql_tonghop_product_tion_detail = "SELECT C.*, D.*, concat(C.id,'_',D.day) AS id_day, ((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_product_join_machine) AS C LEFT JOIN ($sql_production_plan_detail) AS D ON C.id_product = D.id_product_detail AND C.id_machine = D.id_machine_detail WHERE id_product_detail IS NOT NULL";
+					
+					$sql_production_plan_data = "SELECT id_production_detail, id_machine AS id_machine_data, id_product AS id_product_data, time_data, num_ok, num_ng FROM scm_production_plan_datas";
+					
+					$sql_tonghop_product_tion_detail_data = "SELECT E.*, F.* FROM ($sql_tonghop_product_tion_detail) AS E LEFT JOIN ($sql_production_plan_data) AS F ON E.id_production_detail = F.id_production_detail";
+					$array_nangsua_may = null;
+					$array_nangsua_may = $this->DB->query($sql_tonghop_product_tion_detail_data);
+					$str_json = json_encode($array_nangsua_may);
+					if($array_nangsua_may)
 					echo $str_json;
-					return;	
+					return;
 				}
 				
 				/********************************************************************************************************************************/

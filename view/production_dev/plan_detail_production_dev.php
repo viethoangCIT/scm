@@ -167,7 +167,7 @@ tr td {
                 <table border="1" style="border-collapse: collapse">
                     <tr>
                         <th rowspan="2">STT</th>
-                        <th rowspan="2">Máy ép số</th>
+                        <th rowspan="2">Số hiệu máy</th>
                         <th rowspan="2">Mã sản phẩm</th>
                         <th rowspan="2">Tên sản phẩm</th>
                         <th rowspan="2">Khách hàng</th>
@@ -224,7 +224,7 @@ tr td {
 					 ?>
                     <tr>
                         <td><?php echo $stt; ?></td>
-                        <td><?php echo $production_plan_detail["machine_name"]; ?></td>
+                        <td><?php echo $production_plan_detail["machine_control"]; ?></td>
                         <td><?php echo $production_plan_detail["product_code"]; ?></td>
                         <td><?php echo $production_plan_detail["product"]; ?></td>
                         <td><?php echo $production_plan_detail["customer"]; ?></td>
