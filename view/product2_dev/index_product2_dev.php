@@ -21,6 +21,9 @@
 {
 	margin-left:-110px;
 }
+.btn-table{
+	float:none !important;	
+}
 </style>
 <?php 																																							
 	//*****************************************
@@ -77,12 +80,12 @@
 	$array_header_product["col14"] =  array("Chi phí",array("style"=>"text-align:left; width:8%"));
 	$array_header_product["col15"] =  array("Tổng chi phí",array("style"=>"text-align:left; width:8%"));
 	*/
-	$array_header_product["col9"] =  array("Chi tiết",array("style"=>"text-align:center; width:9%"));
-	$array_header_product["col10"] =  array("Định mức nguyên liệu",array("style"=>"text-align:center; width:9%"));
-	$array_header_product["col11"] =  array("Nhân sự sản xuất",array("style"=>"text-align:center; width:9%"));
-	$array_header_product["col12"] =  array("Máy sản xuất",array("style"=>"text-align:center; width:9%"));
-	$array_header_product["col13"] =  array("Sửa",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col14"] =  array("Xóa",array("style"=>"text-align:center; width:8%"));
+	$array_header_product["col9"] =  array("Chi tiết",array("style"=>"text-align:center; width:8%"));
+	//$array_header_product["col10"] =  array("Định mức nguyên liệu",array("style"=>"text-align:center; width:9%"));
+	//$array_header_product["col11"] =  array("Nhân sự sản xuất",array("style"=>"text-align:center; width:9%"));
+	//$array_header_product["col12"] =  array("Máy sản xuất",array("style"=>"text-align:center; width:9%"));
+	$array_header_product["col13"] =  array("Chức năng",array("style"=>"text-align:center; width:8%"));
+	//$array_header_product["col14"] =  array("Danh mục khác",array("style"=>"text-align:center; width:8%"));
 
 		//2: lấy dòng tr header
 	$str_header_product = $this->Template->load_table_header($array_header_product);
@@ -111,6 +114,7 @@
 			$link_nhansu  = $this->Template->load_link("edit","Nhân sự",$link_nhansu);
 			$link_may  = $this->Template->load_link("edit","Máy",$link_may);
 			$link_info = $this->Template->load_link("edit","Chi tiết",$link_info);
+			$link_dinhmuc 	= $this->Html->link(array("controller"=>"product2","action"=>"product_rate","params"=>array($id_product)));
 			// $link_action = $link_xoa . $link_sua;
 			
 			$array_product = NULL;
@@ -134,13 +138,13 @@
 			$array_product["col14"] =  array($product["str_fee_detail"],array("style"=>"text-align:left; width:8%"));
 			$array_product["col15"] =  array($product["sum_fee"],array("style"=>"text-align:left; width:8%"));
 			*/
-			$array_product["col9"] =  array($link_info,array("style"=>"text-align:left; width:8%"));
-			$array_product["col10"] =  array($link_dinhmuc,array("style"=>"text-align:left; width:8%"));
+			$array_product["col9"] =  array($link_info,array("style"=>"text-align:center; width:8%"));
+			//$array_product["col10"] =  array($link_dinhmuc,array("style"=>"text-align:left; width:8%"));
 			//$array_product["col19"] =  array($link_chiphi,array("style"=>"text-align:left; width:8%"));
-			$array_product["col11"] =  array($link_nhansu,array("style"=>"text-align:left; width:8%"));
-			$array_product["col12"] =  array($link_may,array("style"=>"text-align:left; width:8%"));
-			$array_product["col13"] =  array($link_sua,array("style"=>"text-align:left; width:8%"));
-			$array_product["col14"] =  array($link_xoa,array("style"=>"text-align:left; width:8%"));
+			//$array_product["col11"] =  array($link_nhansu,array("style"=>"text-align:left; width:8%"));
+			//$array_product["col12"] =  array($link_may,array("style"=>"text-align:left; width:8%"));
+			$array_product["col13"] =  array($link_sua.$link_xoa,array("style"=>"text-align:center; width:8%"));
+			//$array_product["col14"] =  array($link_xoa,array("style"=>"text-align:center; width:8%"));
 			
 			
 			$str_row_product .= $this->Template->load_table_row($array_product);
