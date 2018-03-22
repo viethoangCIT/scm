@@ -1242,7 +1242,6 @@ class attendance2 extends Main {
 		$id_factory = "4";
 		$id_position = "";
 		$id_job = "";
-		$id_group = "";
 		$name = "";
 		
 		
@@ -1276,13 +1275,14 @@ class attendance2 extends Main {
 			$dieukien.="id_job = '$id_job'";
 			
 		}
+		
+		$id_group = 1;
 		if(isset($_GET['id_group']) && $_GET['id_group'] != "" )
 		{
-			$id_group = $_GET['id_group'];
-			if($dieukien !="") $dieukien .= " AND ";
-			$dieukien.="id_group = '$id_group'";
-			
+			$id_group = $_GET['id_group'];			
 		}
+		if($dieukien !="") $dieukien .= " AND ";
+		$dieukien.="id_group = '$id_group'";
 		if(isset($_GET['name']) && $_GET['name'] != "" )
 		{
 			$name = $_GET['name'];

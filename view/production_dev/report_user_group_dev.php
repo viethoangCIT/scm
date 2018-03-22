@@ -1,8 +1,4 @@
 <style type="text/css">
-.tbl_r{
-
-
-}
 .parent{
   height: 50%;
   position: absolute;
@@ -20,8 +16,6 @@ div.container_table {
 	left: 0;
 	
 }
-
-
 .form-group{
 	margin-top: 0px;
 }
@@ -32,7 +26,7 @@ div.container_table {
 	margin-top: -20px;
 }
 footer{
-	margin-top: 100px;
+	margin-top: 200px;
 }
 .chu-nhat{
 	background-color: #f1c906;
@@ -55,42 +49,41 @@ footer{
   } );
 </script>
 <?php
-	//tạo tiêu đề hàm
+
 	$function_title = "Theo Dõi Nhân Sự";
 	echo $this->Template->load_function_header($function_title);
 	
-	//Dùng hàm load_textbox của đối tượng Template để textbox
+	//BEGIN: INPUT
 	$str_selectbox_manufactory = $this->Template->load_selectbox(array("name" => "id_manufactory", "id"=>"id_manufactory_search" ,"style" => "width:150px","onchange"=>"show_group()"), $array_manufactory,$id_manufactory);
 	$str_textbox_day = $this->Template->load_textbox(array("name" => "month" ,"id"=>"month_search","style" => "width:150px", "value"=>$month));
 	$str_selectbox_group = $this->Template->load_selectbox(array("name" => "id_group", "id"=>"id_group_search" ,"style" => "width:150px"), $array_group_search,$id_group);
 	$str_selectbox_shift = $this->Template->load_selectbox(array("name" => "id_shift", "id"=>"id_shift_search" ,"style" => "width:150px"), $array_shift);
 	$str_save_button = $this->Template->load_button(array("type" => "sutmit"), "Xem");
-	
+	//END: INPUT
 	$str_input_row = "$str_selectbox_manufactory $str_selectbox_group Chọn tháng $str_textbox_day $str_save_button";
 	
 	// LOAD FORM
 	$str_form_production = $this->Template->load_form(array("method" => "GET", "id" => "form_seach", "action" => "/production/user_production"),$str_input_row);
 	echo $str_form_production;
 	
-	//1: tao mang table header 	
+	//BEGIN: LOAD HEADER 	
 	$array_header_production["col1"] = array("Line");
 	$array_header_production["col2"] = array("Mục kiểm soát");
 	for($i=1; $i<=$songay; $i++)
 	{
 		$array_header_production["col_ngay$i"] = array("$i");
 	}
-	
-	//2: lấy dòng tr header
 	$str_header_production = $this->Template->load_table_header($array_header_production);
-	
+	//END: LOAD HEADER
 	$str_row_production = "";
 	
-	//BEGIN: TẠO DÒNG TỔNG ===============================
+	/***************************************************************************************************************************/
+	/*										END: TẠO DÒNG TỔNG THEO DÕI NHÂN SỰ													*/
+	/***************************************************************************************************************************/
 	$str_row_tong = "";
 	$array_row_tong = "";
 	$array_row_tong["col1"] = array("",array("rowspan"=>""));
 	$array_row_tong["col2"] = array("Nhân sự");
-	
 	
 	for($i=1; $i<=$songay; $i++)
 	{
@@ -101,7 +94,7 @@ footer{
 		$timestamp = strtotime($str_month);
 		$weekday= date("l", $timestamp );
 		$normalized_weekday = strtolower($weekday);
-		//echo $normalized_weekday ;
+		
 		$check = false;
 		$class = "";
 		if ($normalized_weekday == "sunday") {
@@ -126,7 +119,7 @@ footer{
 		$timestamp = strtotime($str_month);
 		$weekday= date("l", $timestamp );
 		$normalized_weekday = strtolower($weekday);
-		//echo $normalized_weekday ;
+		
 		$check = false;
 		$class = "";
 		if ($normalized_weekday == "sunday") {
@@ -150,7 +143,7 @@ footer{
 		$timestamp = strtotime($str_month);
 		$weekday= date("l", $timestamp );
 		$normalized_weekday = strtolower($weekday);
-		//echo $normalized_weekday ;
+		
 		$check = false;
 		$class = "";
 		if ($normalized_weekday == "sunday") {
@@ -163,15 +156,14 @@ footer{
 		$array_row_tong["col_ngay$i"] = array("",array("id"=>"tong_vang_$str_month","class"=>"$class"));
 	}
 	$str_row_production .= $this->Template->load_table_row($array_row_tong,array("style"=>"border-bottom: solid 3px"));
-	//END: TẠO DÒNG TỔNG ================================
-	
+	/***************************************************************************************************************************/
+	/*										END: TẠO DÒNG TỔNG THEO DÕI NHÂN SỰ												  */
+	/***************************************************************************************************************************/
 	//1: tao mang table load dòng 	
 
 	$array_muckiemsoat = null;
 	if($array_group)
 	{
-		//echo "Tổ: ";
-		//print_r($array_group);
 		foreach($array_group as $group)
 		{
 			
@@ -191,7 +183,7 @@ footer{
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -203,7 +195,7 @@ footer{
 				//begin: kiem tra ngay chu nhat
 				$array_row_production["col_ngay$i"] = array("",array("id"=>"ss_".$id_group."_$str_month","class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production .= $this->Template->load_table_row($array_row_production);
 			//END:Dòng sĩ số
 			
@@ -223,7 +215,7 @@ footer{
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -237,7 +229,7 @@ footer{
 				
 				$array_row_production["col_ngay$i"] = array("",array("id"=>"hd_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production .= $this->Template->load_table_row($array_row_production);
 			//END:Dòng hiện diện	
 			
@@ -256,7 +248,7 @@ footer{
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -268,7 +260,7 @@ footer{
 				//begin: kiem tra ngay chu nhat
 				$array_row_production["col_ngay$i"] = array("",array("id"=>"dl_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production .= $this->Template->load_table_row($array_row_production);
 			//END:Dòng leader, định lượng
 			
@@ -284,7 +276,7 @@ footer{
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -297,7 +289,7 @@ footer{
 				$str_value = "vang_".$id_group."_".$str_month;
 				$array_row_production["col_ngay$i"] = array("",array("id"=>"vang_".$id_group."_".$str_month,"class"=>"$class","onclick"=>"show_vang('$str_value')","onMouseOver"=>"highlight('$str_value')","onMouseOut"=>"highlightOut('$str_value')"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production .= $this->Template->load_table_row($array_row_production,array("style"=>"border-bottom: solid 3px"));
 			
 			//END: DÒNG VẮNG
@@ -307,9 +299,9 @@ footer{
 		
 	$str_table_production =  $this->Template->load_table($str_header_production . $str_row_production,array("id"=>"fixed_table"));
 	
-	/***************************************************************************************************************************/
-	/***************************************************************************************************************************/
-	/***************************************************************************************************************************/
+/***************************************************************************************************************************/
+/*									BEGIN: BÁO CÁO NHÂN SỰ															*/
+/***************************************************************************************************************************/
 ?>
 
 
@@ -341,7 +333,7 @@ if($array_group)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -353,7 +345,7 @@ if($array_group)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_sx["col_ngay$i"] = array("",array("id"=>"tglv_".$id_group."_$str_month","class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_sx .= $this->Template->load_table_row($array_row_production_sx);
 			//END:Dòng thời gian làm việc
 			
@@ -373,7 +365,7 @@ if($array_group)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -387,7 +379,7 @@ if($array_group)
 				
 				$array_row_production_sx["col_ngay$i"] = array("",array("id"=>"khsx_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_sx .= $this->Template->load_table_row($array_row_production_sx);
 			//END:Dòng kế hoạch sản xuất
 			
@@ -407,7 +399,7 @@ if($array_group)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -421,7 +413,7 @@ if($array_group)
 				
 				$array_row_production_sx["col_ngay$i"] = array("",array("id"=>"thucte_lam_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_sx .= $this->Template->load_table_row($array_row_production_sx);
 			//END:Dòng Thực tế làm được
 			
@@ -440,7 +432,7 @@ if($array_group)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -452,7 +444,7 @@ if($array_group)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_sx["col_ngay$i"] = array("",array("id"=>"nangsuat_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_sx .= $this->Template->load_table_row($array_row_production_sx);
 			//END:Dòng leader, định lượng
 			
@@ -468,7 +460,7 @@ if($array_group)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -480,7 +472,7 @@ if($array_group)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_sx["col_ngay$i"] = array("",array("id"=>"soluong_ng_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_sx .= $this->Template->load_table_row($array_row_production_sx);
 			
 			//END: DÒNG VẮNG
@@ -497,7 +489,7 @@ if($array_group)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -509,7 +501,7 @@ if($array_group)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_sx["col_ngay$i"] = array("",array("id"=>"phantram_ng_".$id_group."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_sx .= $this->Template->load_table_row($array_row_production_sx,array("style"=>"border-bottom: solid 3px"));
 			
 			//END: DÒNG VẮNG
@@ -524,6 +516,7 @@ if($array_group)
 /* 									END: BÁO CÁO NĂNG SUẤT SẢN XUẤT														*/
 /****************************************************************************************************************************/
 ?>
+
 <?php
 /****************************************************************************************************************************/
 /* 									BEGIN: BÁO CÁO NĂNG SUẤT - MÁY 													*/
@@ -551,7 +544,7 @@ if($array_machine)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -563,14 +556,14 @@ if($array_machine)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_machine["col_ngay$i"] = array("",array("id"=>"tenhang_".$id_machine."_$str_month","class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_machine .= $this->Template->load_table_row($array_row_production_machine);
 			//END:DÒNG TÊN HANG
 			
 			//BEGIN:DONG MÃ HÀNG
 			$control = $machine["control"];
 			$id_machine = $machine["id"];
-			
+	
 			$array_row_production_machine["col1"] = array("");
 			$array_row_production_machine["col2"] = array("Mã hàng");
 			
@@ -583,7 +576,6 @@ if($array_machine)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -597,7 +589,6 @@ if($array_machine)
 				
 				$array_row_production_machine["col_ngay$i"] = array("",array("id"=>"mahang_".$id_machine."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
 			$str_row_production_machine .= $this->Template->load_table_row($array_row_production_machine);
 			//END:DÒNG MÃ HÀNG
 			
@@ -617,7 +608,6 @@ if($array_machine)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -628,10 +618,8 @@ if($array_machine)
 				if($check) $class="chu-nhat";
 				//begin: kiem tra ngay chu nhat
 				
-				
 				$array_row_production_machine["col_ngay$i"] = array("",array("id"=>"khsx_may_".$id_machine."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
 			$str_row_production_machine .= $this->Template->load_table_row($array_row_production_machine);
 			//END:DÒNG KẾ HOẠCH SẢN XUẤT - MÁY
 			
@@ -650,7 +638,7 @@ if($array_machine)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -662,7 +650,7 @@ if($array_machine)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_machine["col_ngay$i"] = array("",array("id"=>"thucte_sx_may_".$id_machine."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_machine .= $this->Template->load_table_row($array_row_production_machine);
 			//END: DÒNG THỰC TẾ SẢN XUẤT - MÁY
 			
@@ -678,7 +666,7 @@ if($array_machine)
 				$timestamp = strtotime($str_month);
 				$weekday= date("l", $timestamp );
 				$normalized_weekday = strtolower($weekday);
-				//echo $normalized_weekday ;
+				
 				$check = false;
 				$class = "";
 				if ($normalized_weekday == "sunday") {
@@ -690,7 +678,7 @@ if($array_machine)
 				//begin: kiem tra ngay chu nhat
 				$array_row_production_machine["col_ngay$i"] = array("",array("id"=>"nangsuat_may_".$id_machine."_".$str_month,"class"=>"$class"));
 			}
-			//2: lấy dòng tr header
+			
 			$str_row_production_machine .= $this->Template->load_table_row($array_row_production_machine,array("style"=>"border-bottom: solid 3px"));
 			//END: DÒNG NĂNG SUẤT - MÁY
 					
@@ -753,8 +741,7 @@ if($array_machine)
 			//chuyển dữ liệu từ string về kiểu json
 			var array_data = $.parseJSON(str_data);
 			for (var key in array_data) {
-				//test: document.getElementById("79_2018-03-01").innerHTML  = "abc";
-				//đưa dữ liệu giờ vào các ô ngày trong tháng	
+					
 				//alert(array_data[key]["id_day"]);
 				var id_hiendien = "hd_"+array_data[key]["id_day"];
 				var id_vang = "vang_"+array_data[key]["id_day"];
@@ -763,12 +750,6 @@ if($array_machine)
 				{	
 					document.getElementById(id_hiendien).innerHTML = array_data[key]["hiendien"];
 					document.getElementById(siso).innerHTML = array_data[key]["siso"];
-					/*
-					if(array_data[key]["hiendien_CN"] != "0" )
-					{ 
-						document.getElementById(id_hiendien).innerHTML = array_data[key]["hiendien_CN"];
-					}
-					*/
 				}
 				if(document.getElementById(id_vang)) 
 				{	
@@ -776,7 +757,6 @@ if($array_machine)
 					
 					if(array_data[key]["vang"] == "0" || array_data[key]["vang"] == "") document.getElementById(id_vang).innerHTML = "";	
 					
-					//if(document.getElementById(id_vang).innerHTML = "0") document.getElementById(id_vang).innerHTML = "";
 				}
 			}//END: for (var key in array_data)	
 		});
@@ -903,7 +883,6 @@ if($array_machine)
 				{	
 					document.getElementById(id_thucte_lam).innerHTML = array_data[key]["tong_numok"];
 				}
-				
 				if(document.getElementById(id_soluong_ng)) 
 				{	
 					document.getElementById(id_soluong_ng).innerHTML = array_data[key]["tong_numng"];
@@ -950,11 +929,13 @@ if($array_machine)
 			
 			for (var key in array_data) 
 			{
+				//lấy id các dòng báo báo năng suất từng máy
 				var id_tenhang = "tenhang_"+array_data[key]["id_day"];
 				var id_mahang = "mahang_"+array_data[key]["id_day"];
 				var id_khsx_may = "khsx_may_"+array_data[key]["id_day"];
 				var id_thucte_sx_may = "thucte_sx_may_"+array_data[key]["id_day"];
 				var nangsuat_may = "nangsuat_may_"+array_data[key]["id_day"];
+				
 				if(document.getElementById(id_tenhang))
 				{
 					document.getElementById(id_tenhang).innerHTML = array_data[key]["product"];
@@ -972,6 +953,7 @@ if($array_machine)
 					document.getElementById(id_thucte_sx_may).innerHTML = array_data[key]["num_ok"];
 				}
 				
+				//ép dữ liệu sang kiểu Int
 				var thucte_may = parseInt(array_data[key]["num_ok"]);
 				var khsx_may = parseInt(array_data[key]["soluong_sx"]);
 				if(thucte_may >0)
