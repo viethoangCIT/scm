@@ -1234,9 +1234,7 @@
 				$dk_user_vang = "";
 				if($id_user_group != "" && $day != "") 
 				{
-					//if($check) $dk_user_vang = "id_group = '$id_user_group' AND day='$day' AND hour = '0' AND status='1'";
-					//else 
-						$dk_user_vang = "id_group = '$id_user_group' AND day='$day' AND hour = '0' AND status='1' ";
+					$dk_user_vang = "id_group = '$id_user_group' AND day='$day' AND hour = '0' AND status='1' ";
 				}
 				$array_chamcong_vang = $this->Chamcong->find("all",array("fields"=>"user_fullname, user_code","conditions"=>$dk_user_vang));
 				if($array_chamcong_vang)
@@ -1252,185 +1250,147 @@
 				echo $str_user;
 				return;
 			}
-			//END: lấy tham số act khi ajax request lên server, để trả về nhân viên vắng trong ngày
+			//END: lấy tham số act khi ajax request lên server, để trả về nhân viên vắng trong ngày				
+			$dk_tong_ns = "";
+			if($id_group != "") $dk_tong_ns = " WHERE id_group = '$id_group'";
 			
-				/*
-				$sql_group = "SELECT id AS id_groups, name FROM scm_groups";	
+			//lấy tổng sĩ số nhân sự
+			if(isset($_GET["request"]) && $_GET["request"] =="nhansu" )
+			{
+				
+				$sql_tong_nhansu = "SELECT day, SUM(case when status='1' then 1 else 0 end) AS nhansu, SUM(case when status='1' AND (hour=0 OR hour IS NULL) then 1 else 0 end) AS tong_vang, SUM(case when status='1' AND hour>0 then 1 else 0 end) AS tong_hiendien FROM `scm_chamcong` $dk_tong_ns GROUP BY day";
+				
+				$array_nhansu = $this->DB->query($sql_tong_nhansu);
+				
+				$str_json = json_encode($array_nhansu);
+				if($array_nhansu)
+				echo $str_json;
+				return;	
+			}
+				
+			//lấy dữ liệu hiện diện và vắng của các tổ
+			if(isset($_GET["request"]) && $_GET["request"] =="ajax" )
+			{
+				$sql_group = "SELECT id AS id_groups, name FROM scm_groups";
+					
+				$sql_col_chamcong = "id_group, day";
 				$sql_col_chamcong = "id_group, day";
 				$sql_col_chamcong .= ", SUM(case when `hour` > 0  AND status = '1' then 1 else 0 end) AS hiendien";
 				$sql_col_chamcong .= ", SUM(case when `hour` = 0 AND status = '1' then 1 else 0 end) AS vang";
 				$sql_col_chamcong .= ", SUM(case when  status = '1' then 1 else 0 end) AS siso";
-				//$sql_col_chamcong .= ", SUM(case when `hour`>0 AND status = '1' OR `day_type` = 'CN' then 1 else 0 end) AS hiendien_CN";
-				//$sql_col_chamcong .= ", SUM(case when `hour`= 0 OR status = '1' then 1 else 0 end) AS vang_CN";
-				$sql_chamcong = "SELECT $sql_col_chamcong FROM scm_chamcong GROUP BY id_group, day";	
+				$sql_chamcong = "SELECT $sql_col_chamcong FROM scm_chamcong GROUP BY id_group, day";
+					
 				//$sql_chamcong = "SELECT * FROM scm_chamcong $dieukien_chamcong ";
 				// , (ifnull(vang, 0) + ifnull(hiendien, 0)) AS siso, (ifnull(vang_CN, 0) + ifnull(hiendien_CN, 0)) AS siso_CN
 				$sql_tonghop = "SELECT A.*,B.*, concat(A.id_groups,'_',B.day) as id_day FROM ($sql_group) AS A LEFT JOIN ($sql_chamcong) AS B ON A.id_groups = B.id_group ";
-				//echo $sql_tonghop;
-				*/
 				
-				$dk_tong_ns = "";
-				if($id_group != "") $dk_tong_ns = " WHERE id_group = '$id_group'";
+				$array_chamcong = $this->DB->query($sql_tonghop);
+				$str_json = json_encode($array_chamcong);
 				
-				//lấy tổng sĩ số nhân sự
-				if(isset($_GET["request"]) && $_GET["request"] =="nhansu" )
-				{
-					//$sql_tong_nhansu = "SELECT day, SUM(case when status='1' then 1 else 0 end) AS nhansu FROM `scm_chamcong` $dk_tong_ns GROUP BY day";
-					$sql_tong_nhansu = "SELECT day, SUM(case when status='1' then 1 else 0 end) AS nhansu, SUM(case when status='1' AND (hour=0 OR hour IS NULL) then 1 else 0 end) AS tong_vang, SUM(case when status='1' AND hour>0 then 1 else 0 end) AS tong_hiendien FROM `scm_chamcong` $dk_tong_ns GROUP BY day";
+				echo $str_json;
+				return;	
+			}
+				
+			/********************************************************************************************************************************/
+			/*                                                 BEGIN: BÁO CÁO NĂNG SUẤT SẢN XUẤT*/
+			/********************************************************************************************************************************/
+			//Lấy thời gian làm việc cho tab báo cáo năng suất sản xuất
+			if(isset($_GET["request"]) && $_GET["request"] =="thoigian_lamviec" )
+			{
+				$sql_thoigian_lamviec = "SELECT A.*, B.*, concat(A.id_groups,'_',B.day) as id_day FROM (SELECT id AS id_groups, name FROM scm_groups) AS A LEFT JOIN (SELECT id_group,day, SUM(hour) AS thoigian_lamviec FROM `scm_chamcong` GROUP BY id_group,day) AS B ON A.id_groups = B.id_group";
 					
-					$array_nhansu = $this->DB->query($sql_tong_nhansu);
-					
-					$str_json = json_encode($array_nhansu);
-					if($array_nhansu)
-					echo $str_json;
-					return;	
-				}
+				$array_thoigian_lamviec = $this->DB->query($sql_thoigian_lamviec);
 				
-				//lấy dữ liệu hiện diện và vắng của các tổ
-				if(isset($_GET["request"]) && $_GET["request"] =="ajax" )
-				{
-					$sql_group = "SELECT id AS id_groups, name FROM scm_groups";
-					
-					$sql_col_chamcong = "id_group, day";
-					$sql_col_chamcong = "id_group, day";
-					$sql_col_chamcong .= ", SUM(case when `hour` > 0  AND status = '1' then 1 else 0 end) AS hiendien";
-					$sql_col_chamcong .= ", SUM(case when `hour` = 0 AND status = '1' then 1 else 0 end) AS vang";
-					$sql_col_chamcong .= ", SUM(case when  status = '1' then 1 else 0 end) AS siso";
-					
-					$sql_chamcong = "SELECT $sql_col_chamcong FROM scm_chamcong GROUP BY id_group, day";
-					
-					//$sql_chamcong = "SELECT * FROM scm_chamcong $dieukien_chamcong ";
-					// , (ifnull(vang, 0) + ifnull(hiendien, 0)) AS siso, (ifnull(vang_CN, 0) + ifnull(hiendien_CN, 0)) AS siso_CN
-					$sql_tonghop = "SELECT A.*,B.*, concat(A.id_groups,'_',B.day) as id_day FROM ($sql_group) AS A LEFT JOIN ($sql_chamcong) AS B ON A.id_groups = B.id_group ";
-					
-					//echo $sql_tonghop;
-					$array_chamcong = $this->DB->query($sql_tonghop);
-					//$array_chamcong = $this->User2->query($sql_tonghop_chamcong);
-					$str_json = json_encode($array_chamcong);
+				$str_json = json_encode($array_thoigian_lamviec);
+				if($array_thoigian_lamviec)
+				echo $str_json;
+				return;	
+			}
+								
+			if(isset($_GET["request"]) && $_GET["request"] =="khsx" )
+			{
+				$sql_group = "SELECT id AS id_groups, name FROM scm_groups";
+				$sql_chitiet_conglenh = "SELECT id, id_product, time, day, id_group FROM scm_production_plan_detail";
+				$sql_group_chitiet_cl = "SELECT A.*, B.*, CONCAT( A.id_groups,  '_', B.day ) AS id_day FROM ($sql_group) AS A LEFT JOIN ($sql_chitiet_conglenh) AS B ON A.id_groups = B.id_group";
+				$sql_product_machine = "SELECT id_product AS id_product_mc, cavity, cycletime FROM scm_product_machines";
+				$sql_tong_khsx = "SELECT C.*, D.*,((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_group_chitiet_cl) AS C LEFT JOIN ($sql_product_machine) AS D ON C.id_product = D.id_product_mc";
 				
-					echo $str_json;
-					return;	
-				}
+				$sql_product_data_detail = "SELECT id_production_detail, num_ok, num_ng FROM scm_production_plan_datas";
 				
-				/********************************************************************************************************************************/
-				/*                                                 BEGIN: BÁO CÁO NĂNG SUẤT SẢN XUẤT*/
-				/********************************************************************************************************************************/
-				//Lấy thời gian làm việc cho tab báo cáo năng suất sản xuất
-				if(isset($_GET["request"]) && $_GET["request"] =="thoigian_lamviec" )
-				{
-					$sql_thoigian_lamviec = "SELECT A.*, B.*, concat(A.id_groups,'_',B.day) as id_day FROM (SELECT id AS id_groups, name FROM scm_groups) AS A LEFT JOIN (SELECT id_group,day, SUM(hour) AS thoigian_lamviec FROM `scm_chamcong` GROUP BY id_group,day) AS B ON A.id_groups = B.id_group";
-					
-					$array_thoigian_lamviec = $this->DB->query($sql_thoigian_lamviec);
-					
-					$str_json = json_encode($array_thoigian_lamviec);
-					if($array_thoigian_lamviec)
-					echo $str_json;
-					return;	
-				}
+				$sql_tong_khsx_thucte = "SELECT E.*, F.*, SUM(soluong_sx) AS tong_soluong, SUM(num_ok) AS tong_numok, SUM(num_ng) AS tong_numng FROM ($sql_tong_khsx) AS E LEFT JOIN ($sql_product_data_detail) AS F ON E.id = F.id_production_detail GROUP BY id_group, day";
+				$array_khsx = $this->DB->query($sql_tong_khsx_thucte);
+				$str_json = json_encode($array_khsx);
+				if($array_khsx)
+				echo $str_json;
+				return;	
+			}
 				
-				//lấy kế hoạch sản xuất theo 
-					/*
-					$sql_group = "SELECT id AS id_groups, name FROM scm_groups";
-					$sql_chitiet_conglenh = "SELECT id, id_product, time, day, id_group FROM scm_production_plan_detail";
-					$sql_group_chitiet_cl = "SELECT A.*, B.*, CONCAT( A.id_groups,  '_', B.day ) AS id_day FROM ($sql_group) AS A LEFT JOIN ($sql_chitiet_conglenh) AS B ON A.id_groups = B.id_group";
-					$sql_product_machine = "SELECT id_product AS id_product_mc, cavity, cycletime FROM scm_product_machines";
-					$sql_tong_khsx = "SELECT C.*, D.*,((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_group_chitiet_cl) AS C LEFT JOIN ($sql_product_machine) AS D ON C.id_product = D.id_product_mc";
-					
-					$sql_product_data_detail = "SELECT id_production_detail, num_ok, num_ng FROM scm_production_plan_datas";
-					
-					$sql_tong_khsx_thucte = "SELECT E.*, F.*, SUM(soluong_sx), SUM(num_ok), SUM(num_ng) FROM ($sql_tong_khsx) AS E LEFT JOIN ($sql_product_data_detail) AS F ON E.id = F.id_production_detail GROUP BY id_group, day";
-					//echo $sql_tong_khsx_thucte;
-				*/
-				
-				if(isset($_GET["request"]) && $_GET["request"] =="khsx" )
-				{
-					$sql_group = "SELECT id AS id_groups, name FROM scm_groups";
-					$sql_chitiet_conglenh = "SELECT id, id_product, time, day, id_group FROM scm_production_plan_detail";
-					$sql_group_chitiet_cl = "SELECT A.*, B.*, CONCAT( A.id_groups,  '_', B.day ) AS id_day FROM ($sql_group) AS A LEFT JOIN ($sql_chitiet_conglenh) AS B ON A.id_groups = B.id_group";
-					$sql_product_machine = "SELECT id_product AS id_product_mc, cavity, cycletime FROM scm_product_machines";
-					$sql_tong_khsx = "SELECT C.*, D.*,((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_group_chitiet_cl) AS C LEFT JOIN ($sql_product_machine) AS D ON C.id_product = D.id_product_mc";
-					
-					$sql_product_data_detail = "SELECT id_production_detail, num_ok, num_ng FROM scm_production_plan_datas";
-					
-					$sql_tong_khsx_thucte = "SELECT E.*, F.*, SUM(soluong_sx) AS tong_soluong, SUM(num_ok) AS tong_numok, SUM(num_ng) AS tong_numng FROM ($sql_tong_khsx) AS E LEFT JOIN ($sql_product_data_detail) AS F ON E.id = F.id_production_detail GROUP BY id_group, day";
-					$array_khsx = $this->DB->query($sql_tong_khsx_thucte);
-					$str_json = json_encode($array_khsx);
-					if($array_khsx)
-					echo $str_json;
-					return;	
-				}
-				
-				/********************************************************************************************************************************/
-				/*                                                    END: BÁO CÁO NĂNG SUẤT SẢN XUẤT*/
-				/********************************************************************************************************************************/
-				
-				//truy vấn dữ liệu tổ từ bảng groups
-				$dk_ns = "";
-				if($id_group != "") $dk_ns = "id = '$id_group'";
-				
-				$dk_group_search = "";
-				if($id_manufactory != "") $dk_group_search = "id_manufactory = '$id_manufactory'";
-				
-				
-				$array_group_search = $this->Group->find("all",array("fields"=>"id, name","conditions"=>$dk_group_search));
-				if($array_group_search) $array_group_search = array(""=>array("id"=>"","name"=>"Tổ")) + $array_group_search;
-				
-				$array_group = $this->Group->find("all",array("fields"=>"id, name","conditions"=>$dk_ns));
-				
-				$array_shift = array(""=>array("id"=>"","name"=>"Ca"));
-				$array_shift += $this->Shift->find("all",array("fields"=>"id, name"));
-				
-				$array_manufactory = array(""=>array("id"=>"","name"=>"Xưởng"));
-				$array_manufactory += $this->Manufactory->find("all",array("fields"=>"id, name"));
-				//echo "Tổ:";
-				//print_r($array_group);
-				
-				
-				/********************************************************************************************************************************/
-				/*                                                    BEGIN: BÁO CÁO NĂNG SUẤT TỪNG MÁY											*/
-				/********************************************************************************************************************************/
-				
-				$this->loadModel("Machine","machines");
-				
-				$array_machine = $this->Machine->find("all",array("fields"=>"id, control"));
-				if(isset($_GET["request"]) && $_GET["request"] =="nangsuat_may" )
-				{	
-					$sql_machine = "SELECT id, control, name FROM scm_machines";
-					$sql_product_machine = "SELECT id_product, id_machine, machine_control, cavity, cycletime FROM scm_product_machines";
-					$sql_product_join_machine = "SELECT A.*, B.* FROM ($sql_machine) AS A LEFT JOIN ($sql_product_machine) AS B ON A.id = B.id_machine";
-					
-					$sql_production_plan_detail = "SELECT id_machine AS id_machine_detail, id_product AS id_product_detail, product, product_code, time, day, id AS id_production_detail FROM scm_production_plan_detail";
-					$sql_tonghop_product_tion_detail = "SELECT C.*, D.*, concat(C.id,'_',D.day) AS id_day, ((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_product_join_machine) AS C LEFT JOIN ($sql_production_plan_detail) AS D ON C.id_product = D.id_product_detail AND C.id_machine = D.id_machine_detail WHERE id_product_detail IS NOT NULL";
-					
-					$sql_production_plan_data = "SELECT id_production_detail, id_machine AS id_machine_data, id_product AS id_product_data, time_data, num_ok, num_ng FROM scm_production_plan_datas";
-					
-					$sql_tonghop_product_tion_detail_data = "SELECT E.*, F.* FROM ($sql_tonghop_product_tion_detail) AS E LEFT JOIN ($sql_production_plan_data) AS F ON E.id_production_detail = F.id_production_detail";
-					$array_nangsua_may = null;
-					$array_nangsua_may = $this->DB->query($sql_tonghop_product_tion_detail_data);
-					$str_json = json_encode($array_nangsua_may);
-					if($array_nangsua_may)
-					echo $str_json;
-					return;
-				}
-				
-				/********************************************************************************************************************************/
-				/*                                                    END: BÁO CÁO NĂNG SUẤT TỪNG MÁY											*/
-				/********************************************************************************************************************************/
-				$array_param = array(
-					"array_group"=>$array_group,
-					"array_group_search"=>$array_group_search,
-					"array_shift"=>$array_shift,
-					"array_manufactory"=>$array_manufactory,
-					"songay"=>$songay,
-					"month"=>$month,
-					"id_group"=>$id_group,
-					"id_manufactory"=>$id_manufactory,
-					"array_machine"=>$array_machine
-				);
-				$html = $this->View->render("report_user_group.php",$array_param);
-				echo $html;
-			//}//END: else
+			/********************************************************************************************************************************/
+			/*                                                    END: BÁO CÁO NĂNG SUẤT SẢN XUẤT*/
+			/********************************************************************************************************************************/
 			
+			//truy vấn dữ liệu tổ từ bảng groups
+			$dk_ns = "";
+			if($id_group != "") $dk_ns = "id = '$id_group'";
+			
+			$dk_group_search = "";
+			if($id_manufactory != "") $dk_group_search = "id_manufactory = '$id_manufactory'";
+			
+			
+			$array_group_search = $this->Group->find("all",array("fields"=>"id, name","conditions"=>$dk_group_search));
+			if($array_group_search) $array_group_search = array(""=>array("id"=>"","name"=>"Tổ")) + $array_group_search;
+			
+			$array_group = $this->Group->find("all",array("fields"=>"id, name","conditions"=>$dk_ns));
+			
+			$array_shift = array(""=>array("id"=>"","name"=>"Ca"));
+			$array_shift += $this->Shift->find("all",array("fields"=>"id, name"));
+				
+			$array_manufactory = array(""=>array("id"=>"","name"=>"Xưởng"));
+			$array_manufactory += $this->Manufactory->find("all",array("fields"=>"id, name"));
+			/********************************************************************************************************************************/
+			/*                                                    BEGIN: BÁO CÁO NĂNG SUẤT TỪNG MÁY											*/
+			/********************************************************************************************************************************/
+				
+			$this->loadModel("Machine","machines");
+				
+			$array_machine = $this->Machine->find("all",array("fields"=>"id, control"));
+			if(isset($_GET["request"]) && $_GET["request"] =="nangsuat_may" )
+			{	
+				$sql_machine = "SELECT id, control, name FROM scm_machines";
+				$sql_product_machine = "SELECT id_product, id_machine, machine_control, cavity, cycletime FROM scm_product_machines";
+				$sql_product_join_machine = "SELECT A.*, B.* FROM ($sql_machine) AS A LEFT JOIN ($sql_product_machine) AS B ON A.id = B.id_machine";
+				
+				$sql_production_plan_detail = "SELECT id_machine AS id_machine_detail, id_product AS id_product_detail, product, product_code, time, day, id AS id_production_detail FROM scm_production_plan_detail";
+				$sql_tonghop_product_tion_detail = "SELECT C.*, D.*, concat(C.id,'_',D.day) AS id_day, ((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_product_join_machine) AS C LEFT JOIN ($sql_production_plan_detail) AS D ON C.id_product = D.id_product_detail AND C.id_machine = D.id_machine_detail WHERE id_product_detail IS NOT NULL";
+				
+				$sql_production_plan_data = "SELECT id_production_detail, id_machine AS id_machine_data, id_product AS id_product_data, time_data, num_ok, num_ng FROM scm_production_plan_datas";
+				
+				$sql_tonghop_product_tion_detail_data = "SELECT E.*, F.* FROM ($sql_tonghop_product_tion_detail) AS E LEFT JOIN ($sql_production_plan_data) AS F ON E.id_production_detail = F.id_production_detail";
+				$array_nangsua_may = null;
+				$array_nangsua_may = $this->DB->query($sql_tonghop_product_tion_detail_data);
+				$str_json = json_encode($array_nangsua_may);
+				if($array_nangsua_may)
+				echo $str_json;
+				return;
+			}
+				
+			/********************************************************************************************************************************/
+			/*                                                    END: BÁO CÁO NĂNG SUẤT TỪNG MÁY											*/
+			/********************************************************************************************************************************/
+			
+			$array_param = array(
+				"array_group"=>$array_group,
+				"array_group_search"=>$array_group_search,
+				"array_shift"=>$array_shift,
+				"array_manufactory"=>$array_manufactory,
+				"songay"=>$songay,
+				"month"=>$month,
+				"id_group"=>$id_group,
+				"id_manufactory"=>$id_manufactory,
+				"array_machine"=>$array_machine
+			);
+			$html = $this->View->render("report_user_group.php",$array_param);
+			echo $html;			
 			
 		}
 		
