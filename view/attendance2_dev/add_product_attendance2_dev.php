@@ -133,7 +133,7 @@ if ($array_edit_product != null) {
 
 		//link thêm _ lưu
 		$str_insert_button = $this->Template->load_button(array("type" => "submit", "onclick" => "them()"), "Thêm");
-
+		
 		//lấy dòng nội dung table
 		$array_product1 = array(
 			"Stt" => array(1, array("style" => "text-align:left; width:3%;")),
@@ -157,7 +157,7 @@ if ($array_edit_product != null) {
 		"manv" => array("Mã nhân viên ", array("style" => "text-align:left; width:5%;white-space: nowrap")),
 		"tennv" => array("Họ & Tên", array("style" => "text-align:center; width:15%;")),
 		"chucvu" => array("Chức vụ", array("style" => "text-align:left; width:7%")),
-		"masp" => array("Sản phẩm - đơn giá", array("style" => "text-align:left; width:70%;white-space: nowrap")),
+		"masp" => array("Sản phẩm - đơn giá", array("style" => "text-align:left; width:40%;white-space: nowrap")),
 
 	);
 
@@ -169,7 +169,11 @@ if ($array_edit_product != null) {
 	$stt = 0;
 
 	$num_user = 1;
-	foreach ($array_product_assign as $user) {
+	$tmp_fullname = "";
+	$tmp_usercode = "";
+	$tmp_position = "";
+	$tmp_num = "";
+	foreach ($array_product_assign as $key => $user) {
 		# code...
 
 		// bảng chọn loại ngày công
@@ -178,14 +182,15 @@ if ($array_edit_product != null) {
 		//$str_input_thanhtien = $this->Template->load_textbox(array("name"=>"data[$stt][thanhtien]","id"=>"thanhtien","value"=>"","style"=>"width:100px"));
 
 		// danh sách sản phẩm
-		$str_table_product = "<tr  class='v_mid'><td>Tên Sản Phẩm</td><td>Số lượng</td><td>Người/Gá</td></tr>";
-
+		//$str_table_product = "<tr  class='v_mid'><td>Tên Sản Phẩm</td><td>Số lượng</td><td>Người/Gá</td></tr>";
+		$fullname = $user["fullname"];
+		
 		$tmp_product_name = $user["product_name"];
 		$tmp_id_product = $user["id_product"];
 
 		$str_input_id_user = $this->Template->load_hidden(array("name" => "data[$stt][id_user]", "id" => "id_user", "value" => $user["id"], "style" => "width:100px; margin-top:10px;"));
 		$str_input_user_code = $this->Template->load_hidden(array("name" => "data[$stt][user_code]", "id" => "user_code", "value" => $user["user_code"], "style" => "width:100px; margin-top:10px;"));
-		$str_input_product_fullname = $this->Template->load_hidden(array("name" => "data[$stt][fullname]", "id" => "fullname", "value" => $user["fullname"], "style" => "width:100px;  margin-top:10px;"));
+		$str_input_product_fullname = $this->Template->load_hidden(array("name" => "data[$stt][fullname]", "id" => "fullname", "value" => $fullname, "style" => "width:100px;  margin-top:10px;"));
 		$str_input_product_position = $this->Template->load_hidden(array("name" => "data[$stt][position]", "id" => "position", "value" => $user["position"], "style" => "width:100px; margin-top:10px;"));
 
 		$str_input_id_department = $this->Template->load_hidden(array("name" => "data[$stt][id_department]", "id" => "id_department", "value" => $user["id_department"], "style" => "width:100px; margin-top:10px;"));
@@ -210,25 +215,31 @@ if ($array_edit_product != null) {
 		$str_input_people_stick = $this->Template->load_textbox(array("name" => "data[$stt][nguoi_ga]", "id" => "nguoi_ga", "value" => "", "style" => "width:100px"));
 
 		$str_hidden = $str_input_user_code . $str_input_id_position . $str_input_id_user . $str_input_id_department . $str_input_product_fullname . $str_input_id_factory . $str_input_product_position . $str_input_id_manufactory . $str_input_id_work;
-		$str_table_product .= "<tr><td>$tmp_product_name $str_input_id_product $str_hidden</td><td>$str_input_number</td><td>$str_input_people_stick</td></tr>";
+		$str_table_product = "<tr><td style='width:140px;'>$tmp_product_name $str_input_id_product $str_hidden</td><td style='text-align: center'>$str_input_number</td><td style='text-align: center'>$str_input_people_stick</td></tr>";
 
 		$stt++;
 		$str_table_product = "<table class='ui-responsive table table-bordered table-striped' border='1' width='100%'>$str_table_product</table>";
-
+		
 		//link thêm _ lưu
 		$str_insert_button = $this->Template->load_button(array("type" => "submit", "onclick" => "them()"), "Thêm");
-
+		$user_code = $user["user_code"];
+		$user_position = $user["position"];
+		if($fullname == $tmp_fullname) 
+		{
+			$fullname = "";
+			$user_code = "";
+			$user_position = "";
+		}
+		
 		//lấy dòng nội dung table
 		$array_product1 = array(
-
-			"Stt" => array($num_user, array("style" => "text-align:left; width:3%;")),
-			"manv" => array($user["user_code"], array("style" => "text-align:left; width:5%;white-space: nowrap", "id" => "code_$num_user")),
-			"tennv" => array($user["fullname"], array("style" => "text-align:center; width:15%;")),
-			"chucvu" => array($user["position"], array("style" => "text-align:left; width:8%; ")),
+			"Stt" => array("", array("style" => "text-align:left; width:3%;")),
+			"manv" => array($user_code, array("style" => "text-align:left; width:5%;white-space: nowrap", "id" => "code_$num_user")),
+			"tennv" => array($fullname, array("style" => "text-align:center; width:15%;")),
+			"chucvu" => array($user_position, array("style" => "text-align:left; width:8%; ")),
 			"masp" => array($str_table_product, array("style" => "text-align:left; width:8%")),
-
 		);
-		$num_user++;
+		$tmp_fullname = $user["fullname"];
 		$str_form_product .= $this->Template->load_table_row($array_product1);
 	}
 }

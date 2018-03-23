@@ -10,7 +10,6 @@ div.container_table {
 	padding: 5px 15px;
 	width: 100%;
 	margin:0px;
-	z-index:101;
 	position: absolute;
 	height: 600px;
 	left: 0;
@@ -63,8 +62,9 @@ footer{
 	$str_input_row = "$str_selectbox_manufactory $str_selectbox_group Chọn tháng $str_textbox_day $str_save_button";
 	
 	// LOAD FORM
-	$str_form_production = $this->Template->load_form(array("method" => "GET", "id" => "form_seach", "action" => "/production/user_production"),$str_input_row);
-	echo $str_form_production;
+	$str_form_production_tab1 = $this->Template->load_form(array("method" => "GET", "id" => "form_seach", "action" => "/production/user_production#tabs-1"),$str_input_row);
+	//$str_form_production_tab2 = $this->Template->load_form(array("method" => "GET", "id" => "form_seach", "action" => "/production/user_production#tabs-2"),$str_input_row);
+	$str_form_production_tab2 = $this->Template->load_form(array("method" => "GET", "id" => "form_seach", "action" => "/production/user_production#tabs-1"),$str_input_row);
 	
 	//BEGIN: LOAD HEADER 	
 	$array_header_production["col1"] = array("Line");
@@ -701,12 +701,15 @@ if($array_machine)
     <li><a href="#tabs-3">Báo Cáo Năng Suất Máy</a></li>
   </ul>
   <div id="tabs-1" class="scroll-tab-baocao">
+  
   	<?php
+		echo $str_form_production_tab1;
 		echo $str_table_production;
 	?>
   </div>
     <div id="tabs-2" class="scroll-tab-baocao">
   	<?php
+		echo $str_form_production_tab2;
 		echo $str_table_production_sx;
 	?>
   </div>
@@ -936,6 +939,7 @@ if($array_machine)
 				var id_thucte_sx_may = "thucte_sx_may_"+array_data[key]["id_day"];
 				var nangsuat_may = "nangsuat_may_"+array_data[key]["id_day"];
 				
+				//Cập nhật các dòng báo cáo năng suất từng máy
 				if(document.getElementById(id_tenhang))
 				{
 					document.getElementById(id_tenhang).innerHTML = array_data[key]["product"];
@@ -953,12 +957,12 @@ if($array_machine)
 					document.getElementById(id_thucte_sx_may).innerHTML = array_data[key]["num_ok"];
 				}
 				
-				//ép dữ liệu sang kiểu Int
+				
 				var thucte_may = parseInt(array_data[key]["num_ok"]);
 				var khsx_may = parseInt(array_data[key]["soluong_sx"]);
 				if(thucte_may >0)
 				{
-					//document.getElementById(nangsuat_may).innerHTML = "%";
+					
 					var str_nangsuat_may = thucte_may/khsx_may * 100;
 					if(document.getElementById(nangsuat_may)) 
 					{	

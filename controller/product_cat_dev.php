@@ -145,6 +145,7 @@ class product_cat extends Main
 		$this->loadModel("Manufactory","manufactorys");
 		$this->loadModel("Machine","machines");
 		$this->loadModel("Material","material");
+		$this->loadModel("Factory","factorys");
 		
 		if (isset($_GET["file"])) 
 		{
@@ -183,7 +184,13 @@ class product_cat extends Main
 				$this->Material->save($array_material);
 			}
 			*/
-			
+			$id_factory = "";
+			$factory = "";
+			if(isset($_GET["id_factory"]) && $_GET["id_factory"] != "") 
+			{
+				$id_factory = $_GET["id_factory"];
+				$factory = $this->Factory->get_value(array("fields"=>"name","conditions"=>"id =  '$id_factory'"));
+			}
 			//Dòng Vacuum
 			if($id_product_cat == 1)
 			{
@@ -193,22 +200,18 @@ class product_cat extends Main
 					//BEGIN: Lưu thông tin sản phẩm 
 					//
 					
+					$array_product["id_factory"] = $id_factory;
+					$array_product["factory"] = $factory;
 					$array_product["id_cat"] = $id_product_cat;
 					$array_product["cat_name"] = $this->ProductCat->get_value(array("fields" => "name", "conditions" => "`id` = '$id_product_cat'"));
 					
 					$array_product["barcode"] = $data->val($i, 2);
 					$array_product["code"] = $data->val($i, 3);
 					$array_product["name"] = $data->val($i, 4);
-					
 					//lấy thông tin khách hàng
 					$array_product["customer"] = $data->val($i, 5);
 					$customer = $array_product["customer"];
 					$array_product["id_customer"] = $this->Customer->get_value(array("fields" => "id", "conditions" => "`fullname` = '$customer'"));
-					
-					//lấy thông tin nhà máy
-					$array_product["factory"] = $data->val($i, 6);
-					$factory = $array_product["factory"];
-					$array_product["id_factory"] = $this->Factory->get_value(array("fields" => "id", "conditions" => "`name` = '$factory'"));
 					
 					//lấy thông tin xưởng
 					$array_product["manufactory"] = $data->val($i, 7);
@@ -265,6 +268,7 @@ class product_cat extends Main
 			}
 			
 			//END: DÒNG VACUUM ***********************************************
+				
 			
 			//BEGIN: DÒNG MOLDING
 			if($id_product_cat == 4)
@@ -274,7 +278,8 @@ class product_cat extends Main
 					//========================================================
 					//BEGIN: Lưu thông tin sản phẩm 
 					//
-					
+					$array_product["id_factory"] = $id_factory;
+					$array_product["factory"] = $factory;
 					$array_product["id_cat"] = $id_product_cat;
 					$array_product["cat_name"] = $this->ProductCat->get_value(array("fields" => "name", "conditions" => "`id` = '$id_product_cat'"));
 					
@@ -286,11 +291,6 @@ class product_cat extends Main
 					$array_product["customer"] = $data->val($i, 5);
 					$customer = $array_product["customer"];
 					$array_product["id_customer"] = $this->Customer->get_value(array("fields" => "id", "conditions" => "`fullname` = '$customer'"));
-					
-					//lấy thông tin nhà máy
-					$array_product["factory"] = $data->val($i, 6);
-					$factory = $array_product["factory"];
-					$array_product["id_factory"] = $this->Factory->get_value(array("fields" => "id", "conditions" => "`name` = '$factory'"));
 					
 					//lấy thông tin xưởng
 					$array_product["manufactory"] = $data->val($i, 7);
@@ -346,10 +346,88 @@ class product_cat extends Main
 				}//END: for ($i = 3; $i <= $rowsnum; $i++)
 			}
 			//END: DÒNG MOLDING
+			
+			else
+			{
+				for ($i = 4; $i <= $rowsnum; $i++)
+				{
+					//========================================================
+					//BEGIN: Lưu thông tin sản phẩm 
+					//
+					$array_product["id_factory"] = $id_factory;
+					$array_product["factory"] = $factory;
+					$array_product["id_cat"] = $id_product_cat;
+					$array_product["cat_name"] = $this->ProductCat->get_value(array("fields" => "name", "conditions" => "`id` = '$id_product_cat'"));
+					
+					$array_product["barcode"] = $data->val($i, 2);
+					$array_product["code"] = $data->val($i, 3);
+					$array_product["name"] = $data->val($i, 4);
+					
+					//lấy thông tin khách hàng
+					$array_product["customer"] = $data->val($i, 5);
+					$customer = $array_product["customer"];
+					$array_product["id_customer"] = $this->Customer->get_value(array("fields" => "id", "conditions" => "`fullname` = '$customer'"));
+					
+					//lấy thông tin xưởng
+					$array_product["manufactory"] = $data->val($i, 7);
+					$manufactory = $array_product["manufactory"];
+					$array_product["id_manufactory"] = $this->Manufactory->get_value(array("fields" => "id", "conditions" => "`name` = '$manufactory'"));
+					
+					$this->Product->save($array_product);	
+					//			
+					//END: lưu thông tin sản phẩm 
+					//=======================================================
+					
+					$id_product_max = $this->Product->get_value(array("fields" => "MAX(id)"));
+					$product_name_max = $this->Product->get_value(array("fields" => "name", "conditions" => "`id` = '$id_product_max'"));
+					$product_code_max = $this->Product->get_value(array("fields" => "code", "conditions" => "`id` = '$id_product_max'"));
+					//=======================================================
+					//BEGIN: lưu thông tin CycleTime
+						
+						$array_cycletime = null;
+						//lấy id mới nhất vừa mới lưu
+						$array_cycletime["id_product"] = $id_product_max;
+						$array_cycletime["product_name"] = $product_name_max;
+						$array_cycletime["product_code"] = $product_code_max;
+						
+						//lấy thông tin máy
+						$array_cycletime["machine_control"] = $data->val($i, 8);
+						$machine = $array_cycletime["machine_control"];
+						$array_cycletime["id_machine"] = $this->Machine->get_value(array("fields" => "id", "conditions" => "`name` = '$machine'"));
+						$array_cycletime["cavity"] = $data->val($i, 9);
+						$array_cycletime["cycletime"] = $data->val($i, 10);
+						$this->ProductMachine->save($array_cycletime);
+					
+					//End: lưu thông tin CycleTime ==========================
+					//=======================================================
+					
+					//BEGIN: lưu thông tin ĐỊNH MỨC VẬT TƯ ==================
+					//=======================================================
+					
+					$array_product_rate = null;
+					$array_product_rate["id_product"] = $id_product_max;
+					$array_product_rate["product_name"] = $product_name_max;
+					$array_product_rate["product_code"] = $product_code_max;
+					$array_product_rate["material_code_bar"] = $data->val($i, 11);
+					$array_product_rate["material_code"] = $data->val($i, 12);
+					$array_product_rate["material_name"] = $data->val($i, 13);
+					$array_product_rate["price"] = $data->val($i, 14);
+					$array_product_rate["unit"] = $data->val($i, 15);
+					$array_product_rate["quota"] = $data->val($i, 16);
+					$this->ProductRate->save($array_product_rate);
+					
+					//End: lưu thông tin ĐỊNH MỨC VẬT TƯ ====================
+					//=======================================================
+							
+				}//END: for ($i = 3; $i <= $rowsnum; $i++)
+			}
+			//END: DÒNG 
 		}
 		
+		$array_factory = array(""=>array("id"=>"","name"=>"..."));
+		$array_factory += $this->Factory->find("all",array("fields"=>"id,name"));
 		
-		$html = $this->View->render("import_product.php",array("id_product_cat"=>$id_product_cat));
+		$html = $this->View->render("import_product.php",array("id_product_cat"=>$id_product_cat,"array_factory"=>$array_factory));
 		echo $html;
 	}
 		

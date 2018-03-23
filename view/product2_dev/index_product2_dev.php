@@ -6,7 +6,9 @@
 
 }
 .table-responsive{
-  width: 1800px;
+  width: 100% !important;
+  height: 400px;
+  overflow-y: scroll !important;
 }
 
 .parent{
@@ -62,13 +64,13 @@
 
 		//1: tao mang table header 	
 	$array_header_product["col1"] =  array("STT",array("style"=>"text-align:right; width:3%"));
-	$array_header_product["col2"] =  array("Mã vạch",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col3"] =  array("Mã sản phẩm",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col4"] =  array("Tên sản phẩm",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col5"] =  array("Khách hàng",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col6"] =  array("Dòng sản phẩm",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col7"] =  array("Nhà máy",array("style"=>"text-align:center; width:8%"));
-	$array_header_product["col8"] =  array("Xưởng",array("style"=>"text-align:left; width:8%"));
+	$array_header_product["col2"] =  array("Mã vạch",array("style"=>"text-align:center; width:5%"));
+	$array_header_product["col3"] =  array("Mã sản phẩm",array("style"=>"text-align:center; width:5%"));
+	$array_header_product["col4"] =  array("Tên sản phẩm",array("style"=>"text-align:center;width:10%"));
+	$array_header_product["col5"] =  array("Khách hàng",array("style"=>"text-align:center; width:5%"));
+	$array_header_product["col6"] =  array("Dòng sản phẩm",array("style"=>"text-align:center; width:5%"));
+	$array_header_product["col7"] =  array("Nhà máy",array("style"=>"text-align:center; width:5%"));
+	$array_header_product["col8"] =  array("Xưởng",array("style"=>"text-align:left; width:5%"));
 	
 	/*
 	$array_header_product["col8"] =  array("Giá bán",array("style"=>"text-align:left; width:8%"));
@@ -80,7 +82,7 @@
 	$array_header_product["col14"] =  array("Chi phí",array("style"=>"text-align:left; width:8%"));
 	$array_header_product["col15"] =  array("Tổng chi phí",array("style"=>"text-align:left; width:8%"));
 	*/
-	$array_header_product["col9"] =  array("Chi tiết",array("style"=>"text-align:center; width:8%"));
+	$array_header_product["col9"] =  array("Chi tiết",array("style"=>"text-align:center; width:4%"));
 	//$array_header_product["col10"] =  array("Định mức nguyên liệu",array("style"=>"text-align:center; width:9%"));
 	//$array_header_product["col11"] =  array("Nhân sự sản xuất",array("style"=>"text-align:center; width:9%"));
 	//$array_header_product["col12"] =  array("Máy sản xuất",array("style"=>"text-align:center; width:9%"));
@@ -120,13 +122,13 @@
 			$array_product = NULL;
 			//load dòng sản phẩm
 			$array_product["col1"] =  array($stt,array("style"=>"text-align:right; width:3%"));
-			$array_product["col2"] =  array($product["barcode"],array("style"=>"text-align:left; width:8%"));
-			$array_product["col3"] =  array($product["code"],array("style"=>"text-align:left; width:8%"));
-			$array_product["col4"] =  array($product["name"],array("style"=>"text-align:left; width:8%"));
-			$array_product["col5"] =  array($product["customer"],array("style"=>"text-align:left; width:8%"));
-			$array_product["col6"] =  array($product["cat_name"],array("style"=>"text-align:left; width:8%"));
-			$array_product["col7"] =  array($product["factory"],array("style"=>"text-align:left; width:8%"));
-			$array_product["col8"] =  array($product["manufactory"],array("style"=>"text-align:left; width:8%"));
+			$array_product["col2"] =  array($product["barcode"],array("style"=>"text-align:left;"));
+			$array_product["col3"] =  array($product["code"],array("style"=>"text-align:left;"));
+			$array_product["col4"] =  array($product["name"],array("style"=>"text-align:left;"));
+			$array_product["col5"] =  array($product["customer"],array("style"=>"text-align:left;"));
+			$array_product["col6"] =  array($product["cat_name"],array("style"=>"text-align:left;"));
+			$array_product["col7"] =  array($product["factory"],array("style"=>"text-align:left;"));
+			$array_product["col8"] =  array($product["manufactory"],array("style"=>"text-align:left;"));
 			
 			/*
 			$array_product["col8"] =  array($product["price"],array("style"=>"text-align:left; width:8%"));
@@ -138,12 +140,12 @@
 			$array_product["col14"] =  array($product["str_fee_detail"],array("style"=>"text-align:left; width:8%"));
 			$array_product["col15"] =  array($product["sum_fee"],array("style"=>"text-align:left; width:8%"));
 			*/
-			$array_product["col9"] =  array($link_info,array("style"=>"text-align:center; width:8%"));
+			$array_product["col9"] =  array($link_info,array("style"=>"text-align:center;"));
 			//$array_product["col10"] =  array($link_dinhmuc,array("style"=>"text-align:left; width:8%"));
 			//$array_product["col19"] =  array($link_chiphi,array("style"=>"text-align:left; width:8%"));
 			//$array_product["col11"] =  array($link_nhansu,array("style"=>"text-align:left; width:8%"));
 			//$array_product["col12"] =  array($link_may,array("style"=>"text-align:left; width:8%"));
-			$array_product["col13"] =  array($link_sua.$link_xoa,array("style"=>"text-align:center; width:8%"));
+			$array_product["col13"] =  array($link_sua.$link_xoa,array("style"=>"text-align:center;"));
 			//$array_product["col14"] =  array($link_xoa,array("style"=>"text-align:center; width:8%"));
 			
 			

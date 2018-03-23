@@ -285,7 +285,7 @@ function capnhat_solieu_ngay()
 	name 			 = "<?php echo $name; ?>";
 	$.ajax({ method: "GET", url: "/attendance2/summary.html?debug=sql", data: {request: "ajax", month: month, id_factory: id_factory,id_manufactory: id_manufactory,id_group: id_group,id_position:id_position,id_job:id_job,name:name }})
 	.done(function( str_data ) {
-		alert(str_data);
+		//alert(str_data);
 		//chuyển dữ liệu từ string về kiểu json
 		var array_data = $.parseJSON(str_data);
 		for (var key in array_data) {

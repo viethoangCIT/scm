@@ -5,19 +5,19 @@
 		{
 			$this->loadModel("ProductionPlan", "production_plans");
 			$this->loadModel("Factory", "factorys");
-			$this->loadModel("Manufatory", "manufactorys");
+			$this->loadModel("Manufactory", "manufactorys");
 			$this->loadModel("Group", "groups");
 			$this->loadModel("Shift", "shift");
 			$this->loadModel("User2", "users");
 			
 			$dk = "";
 			$id_factory = "";
-			if(isset($_GET["id_factory"]) && $_GET["id_factory"]!="") $id_factory = $_GET["id_factory"];
+			if(isset($_GET["id_factory"])) $id_factory = $_GET["id_factory"];
 			if($id_factory!="")
 				 $dk = "`id_factory` = '$id_factory'";
 			
 			$id_manufactory = "";
-			if(isset($_GET["id_manufactory"]) && $_GET["id_manufactory"]!="") $id_manufactory = $_GET["id_manufactory"];
+			if(isset($_GET["id_manufactory"]) && $_GET["id_manufactory"]!= "") $id_manufactory = $_GET["id_manufactory"];
 			if($id_manufactory!="") 
 				{
 					if($dk!="") $dk .= " AND ";
@@ -25,7 +25,7 @@
 				}
 			
 			$id_group = "";
-			if(isset($_GET["id_group"]) && $_GET["id_group"]!="") $id_group = $_GET["id_group"];
+			if(isset($_GET["id_group"])) $id_group = $_GET["id_group"];
 			if($id_group!="") 
 				{
 					if($dk!="") $dk .= " AND ";
@@ -33,7 +33,7 @@
 				}
 			
 			$id_shift = "";
-			if(isset($_GET["id_shift"]) && $_GET["id_shift"]!="") $id_shift = $_GET["id_shift"];
+			if(isset($_GET["id_shift"])) $id_shift = $_GET["id_shift"];
 			if($id_shift!="") 
 				{
 					if($dk!="") $dk .= " AND ";
@@ -41,7 +41,7 @@
 				}
 			
 			$id_user_leader = "";
-			if(isset($_GET["id_user_leader"]) && $_GET["id_user_leader"]!="") $id_user_leader = $_GET["id_user_leader"];
+			if(isset($_GET["id_user_leader"])) $id_user_leader = $_GET["id_user_leader"];
 			if($id_user_leader!="") 
 				{
 					if($dk!="") $dk .= " AND ";
@@ -49,7 +49,7 @@
 				}
 			
 			$id_user_manager = "";
-			if(isset($_GET["id_user_manager"]) && $_GET["id_user_manager"]!="") $id_user_manager = $_GET["id_user_manager"];
+			if(isset($_GET["id_user_manager"]) && $_GET["id_user_manager"] != "") $id_user_manager = $_GET["id_user_manager"];
 			if($id_user_manager!="") 
 				{
 					if($dk!="") $dk .= " AND ";
@@ -57,17 +57,42 @@
 				}
 			
 			$day = "";
-			if(isset($_GET["day"]) && $_GET["day"]!="") $day = date("Y-m-d",strtotime($_GET["day"]));
+			if(isset($_GET["day"]) && $_GET["day"] != "") $day = date("Y-m-d",strtotime($_GET["day"]));
 			if($day!="") 
 				{
 					if($dk!="") $dk .= " AND ";
 					 $dk .= "`day` = '$day'";	
 				}
+			
+			//kiểm tra nếu có status =1 thì lưu công lệnh
+			$status = "";
+			if(isset($_GET["status"])) $status = $_GET["status"];
+			if($status!="" && $status == "1") 
+			{
+				$array_data = null;
+				$array_data["id_factory"] = $id_factory;
+				$array_data["id_manufactory"] = $id_manufactory;
+				$array_data["id_group"] = $id_group;
+				$array_data["id_shift"] = $id_shift;
+				$array_data["id_user_leader"] = $id_user_leader;
+				$array_data["id_user_manager"] = $id_user_manager;
+				$array_data["day"] = $day;
+				
+				$array_data["factory"] 		= $this->Factory->get_value(array("conditions"=>"id = '$id_factory'", "fields"=>"name"));
+				$array_data["manufactory"]	= $this->Manufactory->get_value(array("conditions"=>"id = '$id_manufactory'", "fields"=>"name"));
+				$array_data["group"]	 	= $this->Group->get_value(array("conditions"=>"id = '$id_group'", "fields"=>"name"));
+				$array_data["shift"] 		= $this->Shift->get_value(array("conditions"=>"id = '$id_shift'", "fields"=>"name"));
+				$array_data["user_leader"] 	= $this->User2->get_value(array("conditions"=>"id = '$id_user_leader'", "fields"=>"fullname"));
+				$array_data["user_manager"] = $this->User2->get_value(array("conditions"=>"id = '$id_user_manager'", "fields"=>"fullname"));
+				//print_r($array_data);
+				$this->ProductionPlan->save($array_data);
+				$this->redirect("/production/plan");
+			}
 							
 			$array_factory = $this->Factory->find("all", array("fields"=>"id, name"));
 			$array_factory = array(""=>array("id"=>"", "name"=>"...")) + $array_factory;
 			
-			$array_manufactory = $this->Manufatory->find("all", array("fields"=>"id, name"));
+			$array_manufactory = $this->Manufactory->find("all", array("fields"=>"id, name"));
 			$array_manufactory = array(""=>array("id"=>"", "name"=>"...")) + $array_manufactory;
 			
 			$array_group = $this->Group->find("all", array("fields"=>"id, name"));
@@ -236,9 +261,9 @@
 				}
 			}
 			
-			if(isset($_POST["data"]))
+			if(isset($_GET["data"]) && $_GET["data"]["status"] == "1")
 			{
-				$array_data = $_POST["data"];
+				$array_data = $_GET["data"];
 				$array_data["id_production_plan"] = $id_production_plan;
 				$id_product = $array_data["id_product"];
 				
@@ -270,18 +295,28 @@
 			
 			$array_production_plan_detail = $this->ProductionPlanDetail->find("all",array("conditions"=>"id_production_plan='$id_production_plan'"));
 			
-			//$array_machine = array(""=>array("id"=>"","name"=>"Chọn máy"));
-			//$array_machine += $this->Machine->find("all",array("fields"=>"id,name"));
+			$dk_machine = "";
+			$id_product_tmp = "";
+			$array_machine = null;
+			if(isset($_GET["data"]["id_product"]) && $_GET["data"]["id_product"] != "")
+			{
+				$id_product_tmp = $_GET["data"]["id_product"];
+				$dk_machine = "id_product = '$id_product_tmp'";
+				$array_machine = array(""=>array("id"=>"","name"=>"Chọn máy"));
+				$array_machine += $this->ProductMachine->find("all",array("fields"=>"id,machine_control","conditions"=>$dk_machine));
+			}
+			
 			
 			$array_product = array(""=>array("id"=>"","name"=>"Chọn sản phẩm"));
 			$array_product += $this->Product->find("all",array("fields"=>"id,name"));
 			
 			$array_param = array(
 				"array_production_plan_detail"=>$array_production_plan_detail,
-				//"array_machine"=>$array_machine,
+				"array_machine"=>$array_machine,
 				"array_product"=>$array_product,
 				"array_edit"=>$array_edit,
-				"id_production_plan"=>$id_production_plan
+				"id_production_plan"=>$id_production_plan,
+				"id_product_tmp"=>$id_product_tmp
 			);
 			
 			$html_result = $this->View->render("add_plan_detail_production.php",$array_param);
@@ -308,15 +343,15 @@
 			$str_col_product = "id, id_customer, customer, str_user_work, str_product_rate";
 			$sql_product = "SELECT $str_col_product FROM scm_products";
 			
-			$str_col_detail = "id AS id_production_detail, id_production_plan, id_product, product, product_code, time";
+			$str_col_detail = "id AS id_production_detail, id_production_plan, id_product, product, product_code, time, machine_control, id_machine AS id_machine_detail";
 			$sql_detail = "SELECT $str_col_detail FROM scm_production_plan_detail WHERE id_production_plan='$id_production_plan'";
 			
 			$sql_product_detail = "SELECT A.*, B.* FROM ($sql_product) AS A LEFT JOIN ($sql_detail) AS B ON A.id = B.id_product WHERE B.id_product IS NOT NULL";
 			
-			$str_col_machine = "id_product AS id_product_machine,id_machine, machine_name, machine_control, cavity, cycletime";
+			$str_col_machine = "id_product AS id_product_machine,id_machine, machine_name, cavity, cycletime";
 			$sql_machine = "SELECT $str_col_machine FROM scm_product_machines";
 			
-			$sql_production_plan_detail = "SELECT C.*, D.* FROM ($sql_product_detail) AS C LEFT JOIN ($sql_machine) AS D ON C.id = D.id_product_machine";
+			$sql_production_plan_detail = "SELECT C.*, D.* FROM ($sql_product_detail) AS C LEFT JOIN ($sql_machine) AS D ON C.id = D.id_product_machine AND C.id_machine_detail = D.id_machine";
 			
 			$str_col_data = "id_production_detail AS id_production_detail2, time_data, num_ok, num_ng";
 			$sql_production_data = "SELECT $str_col_data FROM scm_production_plan_datas";
@@ -505,6 +540,164 @@
 							);
 			
 			$html = $this->View->render("add_delivery_production.php", $array_param);
+			echo $html;
+		}
+		
+		function add_delivery2($id_delivery="")
+		{
+			$this->loadModel("Factory", "factorys");
+			$this->loadModel("Manufactory", "manufactorys");
+			$this->loadModel("Product_cats", "product_cats");
+			$this->loadModel("Product", "products");
+			$this->loadModel("Customer", "customers");
+			$this->loadModel("Delivery_plan", "delivery_plans");
+			
+			
+			$act = "";
+			if(isset($_GET["act"]) && $_GET["act"] != "") $act = $_GET["act"];
+			if($act == "del")
+			{
+				$this->Delivery_plan->delete($id_delivery);
+				$this->redirect("production/add_delivery2");
+			}
+			if(isset($_POST["production"]))
+			{
+				$array_production = $_POST["production"];
+				
+				$id_product = $array_production["id_product"];
+				
+				//$id_customer = $array_production["id_customer"];
+				
+				$id_factory = $array_production["id_factory"];
+
+				$id_manufactory = $array_production["id_manufactory"];
+				
+				$id_cat = $array_production["id_cat"];
+									
+				$array_production["product_name"] = $this->Product->get_value(array("conditions"=>"id = '$id_product'","fields"=>"name"));
+				
+				$array_production["customer_name"] = $this->Product->get_value(array("conditions"=>"id = '$id_product'","fields"=>"customer"));
+				
+				$array_production["factory_name"] = $this->Factory->get_value(array("conditions"=>"id = '$id_factory'","fields"=>"name"));
+				//$array_factory_name = $this->Factory->find("all", array("conditions"=>"id = '$id_factory'"));
+				
+				$array_production["manufactory_name"] = $this->Manufactory->get_value(array("conditions"=>"id = '$id_manufactory'","fields"=>"name"));
+				//$array_manufactory_name = $this->Manufactory->find("all", array("conditions"=>"id = '$id_manufactory'"));
+				
+				$array_production["cat_name"] = $this->Product_cats->get_value(array("conditions"=>"id = '$id_cat'","fields"=>"name"));
+				//$array_cat_name = $this->Product_cats->find("all", array("conditions"=>"id = '$id_cat'"));
+				
+				//$songay = $array
+				$month = $array_production["month"];
+				//chuyển chuỗi ngày định dạng d-m-y thành Y-m-d
+				$array_production["month"] = date("Y-m-d",strtotime("01-".$array_production["month"]));
+								
+				$songay = $array_production["songay"];
+				
+				$total = 0;
+				
+				
+				//$total = $array_production["day_1"] + $array_production["day_2"];
+				for($i=1; $i<=$songay; $i++)
+				{
+					if(isset($array_production["day_$i"])) 
+					{
+						$array_production["day_$i"] = str_replace(",", "", $array_production["day_$i"]);
+						$total += $array_production["day_$i"]; 
+					}
+				}
+				
+				$array_production["total"] = $total;
+				
+				
+				$this->Delivery_plan->save($array_production);
+				
+				$this->redirect("/production/add_delivery2.html?id_factory=$id_factory&id_manufactory=$id_manufactory&id_cat=$id_cat&id_product=$id_product&month=$month");
+			}
+			
+			//sửa
+			$array_edit_delivery = NULL;
+			if($id_delivery!="")
+			{
+				$array_edit_delivery = $this->Delivery_plan->find("all", array("conditions"=>"id = '$id_delivery'"));
+			}		
+			
+			//lấy danh mục
+			$array_factory = $this->Factory->find("all", array("fields"=>"id, name"));
+			$array_factory = array(""=>array("id"=>"", "name"=>"Chọn nhà máy")) + $array_factory;
+			$array_product_cat = $this->Product_cats->find("all", array("fields"=>"id, name"));
+			$array_product_cat = array(""=>array("id"=>"", "name"=>"Chọn dòng sản phẩm")) + $array_product_cat;
+			$array_customer = $this->Customer->find("all", array("fields"=>"id, concat(code,' - ', fullname) as fullname"));
+			
+			
+			$dk = "";
+			$id_cat = "";
+			//nếu có id_cat từ form submit lên thì lấy
+			if (isset($_GET["id_cat"]) && $_GET["id_cat"] != "")  $id_cat = $_GET["id_cat"];
+			$dk = " `id_cat` = '$id_cat'";
+			
+			
+			$id_factory = "";
+			
+			//kiểm tra trên trình duyệt có id_factory truyền lên và khác rỗng không
+			if (isset($_GET["id_factory"]) && $_GET["id_factory"] != "") 	$id_factory = $_GET["id_factory"];
+			
+			if($dk!="")	$dk .= " AND ";
+			$dk .= "`id_factory` = '$id_factory'";
+				
+			
+			
+			$id_manufactory = "";
+			if (isset($_GET["id_manufactory"]) && $_GET["id_manufactory"] != "") $id_manufactory = $_GET["id_manufactory"];
+
+			if($dk!="")	$dk .= " AND ";
+			$dk .= "`id_manufactory` = '$id_manufactory'";
+			
+			$month = date("m-Y");
+			if(isset($_GET["month"]))
+			{
+				$month = $_GET["month"];
+			}
+			
+				//nối thêm ngày 01 đầu tiên để trở thành 01-m-Y
+			$thang_hientai = "01-".$month;
+			
+			//lấy ngày cuối cùng trong tháng
+			$songay = date("t",strtotime($thang_hientai));
+			
+			$array_product = $this->Product->find("all", array("conditions"=>"id_cat = '$id_cat'", "fields"=>"id, concat(code,' - ', name) as name"));
+			//$array_product = array(""=>array("id"=>"", "name"=>"Chọn sản phẩm")) + $array_product;
+			
+			//$dk_id_factory để đưa vào truy vấn bảng Manufactory theo id_factory = $id_factory
+			$dk_id_factory = "id_factory = '$id_factory'";
+			
+			$array_manufactory = $this->Manufactory->find("all", array("conditions"=>$dk_id_factory ,"fields"=>"id, name"));
+			
+			//$array_manufactory = array(""=>array("id"=>"", "name"=>"Chọn xưởng")) + $array_manufactory ;
+			
+				
+			//sửa
+			$array_delivery = $this->Delivery_plan->find("all", array("conditions"=>$dk, "order"=>"product_name ASC"));
+			
+			//$array_product_code = $this->Product->find("all", array("conditions"=>$dk));
+			
+			$array_delivery = $this->Delivery_plan->find("all", array("order"=>"id DESC"));
+			
+			$array_param = array("array_factory"=>$array_factory,
+								 "array_manufactory"=>$array_manufactory,
+								 "array_product_cat"=>$array_product_cat,
+								 "array_product"=>$array_product,
+								 "array_customer"=>$array_customer,
+								 "array_delivery"=>$array_delivery,
+								 "id_cat"=>$id_cat,
+								 "id_factory"=>$id_factory,
+								 "id_manufactory"=>$id_manufactory,
+								 "month"=>$month,
+								 "songay"=>$songay,
+								 "array_edit_delivery"=>$array_edit_delivery
+							);
+			
+			$html = $this->View->render("add_delivery2_production.php", $array_param);
 			echo $html;
 		}
 		
@@ -1194,7 +1387,7 @@
 			}
 			
 			//lấy ngày cuối cùng trong tháng
-			$songay = date("t",strtotime($month));
+			$songay = date("t",strtotime($start_month));
 			$last_month = date("Y-m-t",strtotime($start_month));
 			
 			$dieukien_chamcong = "";
@@ -1359,13 +1552,12 @@
 				$sql_machine = "SELECT id, control, name FROM scm_machines";
 				$sql_product_machine = "SELECT id_product, id_machine, machine_control, cavity, cycletime FROM scm_product_machines";
 				$sql_product_join_machine = "SELECT A.*, B.* FROM ($sql_machine) AS A LEFT JOIN ($sql_product_machine) AS B ON A.id = B.id_machine";
-				
 				$sql_production_plan_detail = "SELECT id_machine AS id_machine_detail, id_product AS id_product_detail, product, product_code, time, day, id AS id_production_detail FROM scm_production_plan_detail";
 				$sql_tonghop_product_tion_detail = "SELECT C.*, D.*, concat(C.id,'_',D.day) AS id_day, ((3600/cycletime) * cavity * time) AS soluong_sx FROM ($sql_product_join_machine) AS C LEFT JOIN ($sql_production_plan_detail) AS D ON C.id_product = D.id_product_detail AND C.id_machine = D.id_machine_detail WHERE id_product_detail IS NOT NULL";
-				
 				$sql_production_plan_data = "SELECT id_production_detail, id_machine AS id_machine_data, id_product AS id_product_data, time_data, num_ok, num_ng FROM scm_production_plan_datas";
 				
 				$sql_tonghop_product_tion_detail_data = "SELECT E.*, F.* FROM ($sql_tonghop_product_tion_detail) AS E LEFT JOIN ($sql_production_plan_data) AS F ON E.id_production_detail = F.id_production_detail";
+				
 				$array_nangsua_may = null;
 				$array_nangsua_may = $this->DB->query($sql_tonghop_product_tion_detail_data);
 				$str_json = json_encode($array_nangsua_may);
@@ -1454,6 +1646,109 @@
 								);
 			
 			$html = $this->View->render("quality.php", $array_parram);
+			echo $html;
+		}
+		function import()
+		{
+			$this->loadModel("Factory");
+			$this->loadModel("ManuFactory","manufactorys");
+			$this->loadModel("ProductCat","product_cats");
+			$this->loadModel("DeliveryPlan","delivery_plans");
+			$this->loadModel("Product","products");
+			$this->loadModel("Customer","customers");
+			
+			if (isset($_GET["file"])) 
+			{
+				$file = $_GET["file"];
+	
+				//đọc file excel và lưu vào CSDL
+				$this->loadLib("Excel", "excel");
+	
+				//mở file excel
+				$excel_file = $this->root_folder . "files/" . $this->Company->upload_folder . "/" . $file;
+				$data = $this->Excel->open($excel_file);
+				//print_r($data);
+				// lay so hang cua sheet
+				$rowsnum = $data->rowcount($sheet_index = 0);
+				// lay so cot cua sheet
+				$colsnum = $data->colcount($sheet_index = 0);
+				
+				$month = date("Y-m-d");
+				if(isset($_GET["month"]) && $_GET["month"] != "")
+				{
+					$month = "01-".$_GET["month"];
+					$month = date("Y-m-d",strtotime($month));
+				}
+				$id_factory = "";
+				if(isset($_GET["id_factory"]) && $_GET["id_factory"] != "")
+				{
+					$id_factory = $_GET["id_factory"];
+				}
+				$id_manufactory = "";
+				if(isset($_GET["id_manufactory"]) && $_GET["id_manufactory"] != "")
+				{
+					$id_manufactory = $_GET["id_manufactory"];
+				}
+				$id_cat = "";
+				if(isset($_GET["id_cat"]) && $_GET["id_cat"] != "")
+				{
+					$id_cat = $_GET["id_cat"];
+				}
+				$array_deli = null;
+				for ($i = 10; $i <= $rowsnum; $i++)
+				{
+					$array_deli["month"] = $month;
+					$array_deli["id_factory"] = $id_factory;
+					$array_deli["id_manufactory"] = $id_manufactory;
+					$array_deli["id_cat"] = $id_cat;
+					
+					$array_deli["factory_name"] = $this->Factory->get_value(array("fields"=>"name","conditions"=>"id = '$id_factory'"));
+					$array_deli["manufactory_name"] = $this->ManuFactory->get_value(array("fields"=>"name","conditions"=>"id = '$id_manufactory'"));
+					$array_deli["cat_name"] = $this->ProductCat->get_value(array("fields"=>"name","conditions"=>"id = '$id_cat'"));
+					
+					$array_deli["product_name"] = $data->val($i, 1);
+					$array_deli["product_code"] = $data->val($i, 2);
+					
+					//sản phẩm					
+					$product_name = $data->val($i, 1);
+					$product_code = $data->val($i, 2);
+					$array_deli["id_product"] = $this->Product->get_value(array("fields"=>"id","conditions"=>"name = '$product_name' AND code = '$product_code'"));
+					
+					//khách hàng
+					$customer_name = $data->val($i, 3);
+					$array_deli["customer_name"] = $customer_name;
+					$array_deli["id_customer"] = $this->Customer->get_value(array("fields"=>"id","conditions"=>"id = '$customer_name'"));
+					
+					$num = 5;
+					for($j = 1; $j<=31;$j++)
+					{
+
+						$array_deli["day_$j"] = $data->val($i, $num);
+						$num++;
+					}
+					$this->DeliveryPlan->save($array_deli);
+					//print_r($array_deli);
+				}
+				
+			
+			}
+			
+			$array_factory = array(""=>array("id"=>"","name"=>"..."));
+			$array_factory += $this->Factory->find("all",array("fields"=>"id,name"));
+			
+			$array_manufactory = array(""=>array("id"=>"","name"=>"..."));
+			$array_manufactory += $this->ManuFactory->find("all",array("fields"=>"id,name"));
+			
+			$array_product_cat = array(""=>array("id"=>"","name"=>"..."));
+			$array_product_cat += $this->ProductCat->find("all",array("fields"=>"id,name"));
+			$array_param = array(
+				"array_factory"=>$array_factory,
+				"array_manufactory"=>$array_manufactory,
+				"array_product_cat"=>$array_product_cat,
+				"array_factory"=>$array_factory
+			);
+			
+			$html = $this->View->render("import_production.php",$array_param);
 			echo $html;
 		}
 	}

@@ -7,7 +7,7 @@
 
 }
 .table-responsive{
-  width: 1800px;
+  width: 100%;
 }
 
 .parent{
@@ -17,15 +17,21 @@
   left: 0;
   overflow-y:hidden;
 }
+.form_save_search{
+	left: 0;
+    margin-left: -115px;
+    width: 1400px;	
+	margin-bottom:50px;
+}
 </style>
 
 <?php
-	$title_header = " Xem Công Lệnh Sản Xuất";
+	$title_header = " Tạo Công Lệnh Sản Xuất";
 	echo $this->Template->load_function_header($title_header);
 	
 	$str_selectbox_factory = $this->Template->load_selectbox(array("name"=>"id_factory","value"=>"","style"=>"width:120px"), $array_factory, $id_factory);
 	
-	$str_selectbox_manufactory = $this->Template->load_selectbox(array("name" => "id_manufactory", "style" => "width:120px"), $array_manufactory, $id_manufactory);
+	$str_selectbox_manufactory = $this->Template->load_selectbox(array("name" => "id_manufactory", "style" => "width:120px","onchange"=>"show_group()"), $array_manufactory, $id_manufactory);
 	
 	$str_selectbox_group = $this->Template->load_selectbox(array("name" => "id_group", "style" => "width:120px"), $array_group, $id_group);
 	
@@ -36,14 +42,14 @@
 	$str_selectbox_kiemtra = $this->Template->load_selectbox(array("name" => "id_user_manager", "style" => "width:120px"), $array_user, $id_user_manager);
 	
 	$str_textbox_day = $this->Template->load_textbox(array("name" => "day", "id"=>"day", "style" => "width:120px", "value"=>$day));
+	$str_hidden_status = $this->Template->load_hidden(array("name" => "status", "id"=>"status", "style" => "width:120px", "value"=>"0"));
 	
-	$str_save_button = $this->Template->load_button(array("type" => "sutmit"), "Tìm kiếm");
-	
+	$str_save_button = $this->Template->load_button(array("type" => "button","onclick"=>"save_form()"), "Lưu");
+	$str_search_button = $this->Template->load_button(array("type" => "button","onclick"=>"search_form()"), "Tìm kiếm");	
 	$str_input_row = "Nhà máy: $str_selectbox_factory Xưởng: $str_selectbox_manufactory Tổ: $str_selectbox_group Ca: $str_selectbox_shift
-				 Trưởng ca: $str_selectbox_truongca Quản đốc $str_selectbox_kiemtra Ngày: $str_textbox_day $str_save_button";
-				 
-	
-	
+				 Trưởng ca: $str_selectbox_truongca Quản đốc $str_selectbox_kiemtra Ngày: $str_textbox_day $str_save_button $str_search_button";
+	$str_form_production = $this->Template->load_form(array("method" => "GET", "id" => "form_search", "action" => "/production/plan"),$str_input_row .$str_hidden_status);
+		
 	
 	$array_header_production = NULL;		
 	$array_header_production["col1"] = array("STT", array("align"=>"center","style"=>"width: 5px"));
@@ -107,20 +113,47 @@
 	$str_table_production = $this->Template->load_table($str_header_production . $str_row_production);
 	
 	// LOAD FORM
-	$str_form_production = $this->Template->load_form(array("method" => "GET", "id" => "form_seach", "action" => "/production/plan"),$str_input_row . $str_table_production);
+	//$str_form_production = $this->Template->load_form(array("method" => "GET", "id" => "form_search", "action" => "/production/plan"),$str_input_row .$str_hidden_status. $str_table_production);
+	
 	
 	
 ?>
-
-<div class="parent">
-
+<div class="form_save_search" >
+	
    <?php
-	echo $str_form_production;
-
+		echo $str_form_production;
+	?>
+</div>
+<div class="parent">
+	
+   <?php
+		$title_header = "Công Lệnh Sản Xuất";
+		echo $this->Template->load_function_header($title_header);
+  	 	echo $str_table_production;
 	?>
 </div>
 
 <script>
 	$( "#day" ).datepicker({dateFormat: "dd-mm-yy"});
+	function search_form()
+	{
+		document.getElementById("form_search").submit();
+	}
+	function save_form()
+	{
+		if(document.getElementById("day").value == "")
+		{
+			document.getElementById("day").focus();
+		}
+		else
+		{
+			document.getElementById("status").value = "1";
+			document.getElementById("form_search").submit();
 
+		}
+	}
+	function show_group()
+	{
+		document.getElementById("form_search").submit();
+	}
 </script>

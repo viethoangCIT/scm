@@ -1,6 +1,6 @@
 <?php
 //Begin: Tạo tên tiêu đề
-$function_title = "Gán Sản Phẩm Cho Nhân Viên: $fullname";
+$function_title = "Gán Sản Phẩm Cho Nhân Viên:";
 //Dùng hàm load_function_header để tạo tiêu đề
 echo $this->Template->load_function_header($function_title);
 //End: Tạo tên tiêu đề
