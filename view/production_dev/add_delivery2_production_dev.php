@@ -14,7 +14,7 @@
   position: absolute;
   width: 100%;
   left: 0;
-  overflow-y:hidden;
+  overflow-y:scroll;
 }
 </style>
 <?php
@@ -46,13 +46,13 @@
 	//BEGIN: HEADER
 	//TẠO MẢNG HEADER
 	$array_header_production = NULL;		
-	$array_header_production["col1"] = array("STT", array("align"=>"center","style"=>"width: 20px"));
-	$array_header_production["col2"] = array("Sản phẩm", array("align"=>"center","style"=>"width: 20px"));
+	$array_header_production["col1"] = array("STT", array("align"=>"center","style"=>"width:3%"));
+	$array_header_production["col2"] = array("Sản phẩm", array("align"=>"center","style"=>"width: 10%"));
 	//$array_header_production["col4"] = array("Khách hàng", array("align"=>"center","style"=>"width: 20px"));
 	
 	for($i=1; $i<=$songay; $i++)
 	{
-		$array_header_production["col_ngay$i"] = array("$i-$month", array("align"=>"center","style"=>"width: 20px"));
+		$array_header_production["col_ngay$i"] = array("$i", array("align"=>"center","style"=>"width: 5%"));
 	
 	}
 
